@@ -122,7 +122,7 @@
 
           // Update / add to the stored torrents variable - so we can access
           // the latest state of torrents in other functions.
-          eval('STORED_TORRENT_STATE.' + id + '= torrent');
+          eval('STORED_TORRENT_STATE._' + id + '= torrent');
 
           var buttons = $('<td>').addClass('right buttons');
           if(torrent.state.toLowerCase() == 'paused') {
@@ -188,6 +188,7 @@
               console.log('deluge: error fetching torrent status information!');
               return;
             }
+
             update_torrent_states(obj.result.filters.state);
             update_torrents(obj.result.torrents);
           }, 'json');
@@ -196,7 +197,7 @@
       $('.buttons .auto-managed').live('click', function() {
         var parent = $(this).parents('tr');
         var torrent_id = parent.attr('id');
-        var torrent = eval('STORED_TORRENT_STATE.' + torrent_id);
+        var torrent = eval('STORED_TORRENT_STATE._' + torrent_id);
         var auto_managed = !torrent.is_auto_managed;
 
         COUNTER++;
@@ -213,7 +214,7 @@
       $('.buttons .pause-resume').live('click', function() {
         var parent = $(this).parents('tr');
         var torrent_id = parent.attr('id');
-        var torrent = eval('STORED_TORRENT_STATE.' + torrent_id);
+        var torrent = eval('STORED_TORRENT_STATE._' + torrent_id);
         var _method = torrent.state == 'Paused' ? 'core.resume_torrent' : 'core.pause_torrent';
 
         COUNTER++;
@@ -271,7 +272,7 @@
             update_ui();
             // And we'll udate the UI every x seconds too.
             if(!INTERVAL_UI) {
-              INTERVAL_UI = setInterval('update_ui()', 2000);
+              // INTERVAL_UI = setInterval('update_ui()', 2000);
             }
           },
           error: function(obj) {
