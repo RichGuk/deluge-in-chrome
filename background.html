@@ -4,7 +4,6 @@
   <head>
     <script src="js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" charset="utf-8">
-      var ENDPOINT = 'http://192.168.0.2:10002/json';
 
       // Check the status of Deluge webUI. Will check that the UI can be reached
       // at the URL provided in the options and also that it is logged in and connected
@@ -18,6 +17,16 @@
       // Second manually by torrent_status.html when it's loaded and then every
       // X minutes (see setInterval in the document.ready function).
       function deluge_status_check(args) {
+        var ADDRESS = localStorage.deluge_address;
+        var PORT = localStorage.deluge_port;
+        var PASSWORD = localStorage.deluge_password;
+
+        if(PORT) {
+          var _port = ':' + PORT;
+        } else {
+          var _port = '';
+        }
+        var ENDPOINT = ADDRESS +  _port  + '/json';
 
         // Attempt to login to Deluge webUI using the password stored in
         // the extension options. If successful then, upon ajax cb, check we're
@@ -31,7 +40,7 @@
             type: 'POST',
             dataType: 'json',
             url: ENDPOINT,
-            data: JSON.stringify({method: 'auth.login', params: ['deluge'], id: '-2'}),
+            data: JSON.stringify({method: 'auth.login', params: [PASSWORD], id: '-2'}),
             success: function(obj) {
               if(obj && obj.result) {
                 console.log('deluge: now logged in!');

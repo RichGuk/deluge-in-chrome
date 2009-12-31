@@ -1,0 +1,35 @@
+/*
+ * Attempt to provide some Chrome look n' feels for the options page mainly.
+ *
+ * I had a look for a built in way to do this and found this:
+ * http://code.google.com/p/chromium/issues/detail?id=25317
+ * So I'll update it when/if that's implemented.
+ */
+
+.chrome-header a, .chrome-sub-header a { color: blue; }
+.chrome-header a:hover, .chrome-sub-header a:hover { color: #000000; }
+
+.chrome-header {
+  background: #EBEFF9;
+  border-top: 1px solid #B5C7DE;
+  padding: 3px 0 2px 5px;
+  margin: 15px 0 0 0;
+  width: 100%;
+}
+
+.chrome-header h2 {
+  font-size: 12px;
+  padding: 0;
+  margin: 0;
+}
+
+.chrome-sub-header {
+  background: #F4F6FC;
+  border-bottom: 1px solid #EDEFF5;
+  padding: 0.8em 0 0.8em 5px;
+  margin: 0 0 15px 0;
+  width: 100%;
+}
+
+.chrome-sub-header p:first-child {margin-top: 0;}
+.chrome-sub-header p:last-child {margin-bottom: 0;}

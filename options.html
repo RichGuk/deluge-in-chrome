@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Deluge in Chrome : Configuration</title>
+    <link rel="stylesheet" href="css/master.css" type="text/css" />
+    <link rel="stylesheet" href="css/chrome.css" type="text/css" />
+    <style type="text/css" media="screen">
+      .buttons { margin: 10px 0 0 0; }
+      .buttons .left { float: left; }
+      .buttons .right { float: right; }
+    </style>
+  </head>
+
+  <body>
+    <div id="header">
+      <div id="logo">
+        <a href="#" title="Go to Deluge WebUI!">
+          <span class="title">Deluge</span>
+          <span class="subtitle">Deluge torrent information in Chrome</span>
+        </a>
+      </div>
+      <div class="clr"></div>
+    </div>
+
+    <div id="options">
+      <div class="chrome-header">
+        <h2>Configuration</h2>
+      </div>
+      <div class="chrome-sub-header">
+        <p>This extension requires an accessible version of Deluge web interface to be running. Please refer to the <a href="http://deluge-torrent.org/" target="_blank">Deluge documentation</a> on how to get this working.</p>
+        <p>In order to connect to the web interface with need to know some details about the web interface; The address and port number used to access the interface (http://address:port) and finally the password used to login.</p>
+      </div>
+
+      <form class="nice-form" style="width: 500px">
+        <fieldset>
+          <legend>Options</legend>
+          <p>
+            <label>Address:</label>
+            <input type="text" name="address" id="address" style="width: 300px" />
+          </p>
+
+          <p>
+            <label>Port:</label>
+            <input type="text" name="port" id="port" style="width: 40px" />
+          </p>
+
+          <p>
+            <label>Password:</label>
+            <input type="text" name="password" id="password" />
+          </p>
+        </fieldset>
+
+        <div class="buttons">
+          <div class="left">
+            <button type="submit" class="cancel">Cancel</button>
+          </div>
+          <div class="right">
+            <button type="submit" class="save">Save</button>
+            <button type="submit" class="apply">Apply</button>
+          </div>
+          <div class="clr"></div>
+        </div>
+      </form>
+    </div>
+
+    <script src="js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+      function restore_options() {
+        var address = '';
+
+        address = localStorage.deluge_address;
+        if(!address) {
+          address = 'http://';
+        }
+        $('#address').val(address);
+        $('#port').val(localStorage.deluge_port);
+        $('#password').val(localStorage.deluge_password);
+
+        console.log('deluge: restored options in options page');
+      }
+
+      function save_options() {
+        localStorage.deluge_address = $('#address').val();
+        localStorage.deluge_port = $('#port').val();
+        localStorage.deluge_password = $('#password').val();
+
+        var background = chrome.extension.getBackgroundPage();
+        background.deluge_status_check({
+          success: background.enable_icon,
+          error: background.disable_icon
+        });
+
+        console.log('deluge: options saved!');
+      }
+
+
+      $(document).ready(function() {
+        $('#address').blur(function() {
+          if($(this).val() == '') {
+            $(this).val('http://');
+          }
+        });
+
+        $('.buttons .save').live('click', function() {
+          save_options();
+          window.close();
+          return false;
+        });
+
+        $('.buttons .apply').live('click', function() {
+          save_options();
+          return false;
+        });
+
+        $('.buttons .cancel').live('click', function() {
+          window.close();
+          return false;
+        });
+
+        restore_options();
+      });
+    </script>
+  </body>
+</html>

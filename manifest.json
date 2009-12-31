@@ -1,7 +1,6 @@
 {
-  "name": "Deluge-Torrent Chrome",
-  "version": "0.1",
-  "description": "Provides a simple status of torrents in Deluge.",
+  "name": "Deluge in Chrome",
+  "description": "Provides a quick overview of torrent status for Deluge.",
   "icons": {
     "48": "images/icons/128.png",
     "64": "images/icons/164.png",
@@ -9,12 +8,15 @@
     "16": "images/icons/16.png"
   },
   "background_page": "background.html",
+  "options_page": "options.html",
   "browser_action": {
     "default_icon": "images/icons/deluge.png",
     "default_title": "Could not connect to deluge!",
     "popup": "torrent_status.html"
   },
   "permissions": [
-     "tabs", "http://*/*"
-  ]
+     "tabs", "http://*/*", "https://*/*"
+  ],
+
+  "version": "0.2"
 }

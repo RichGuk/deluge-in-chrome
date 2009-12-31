@@ -4,6 +4,15 @@ body {
   font-size: 75%;
   padding: 0 20px;
 }
+
+a {
+  border-bottom: 1px dotted #BBBBBB;
+  color: #425570;
+  text-decoration: none;
+}
+
+a:hover {color: #000000;}
+
 .clr { clear: both; }
 
 span.small {
@@ -11,12 +20,13 @@ span.small {
   font-size: 10px;
 }
 
-#torrent-status { width: 750px; }
+#torrent-status, #disconnected { width: 750px; }
 
 #logo { float: left; }
 
 #logo a {
   background: url(../images/deluge.png) no-repeat left top;
+  border: 0;
   display: block;
   text-decoration: none;
 }
@@ -91,7 +101,10 @@ span.small {
 .nice-table tbody td.left { border-left: 1px solid #CCC; }
 .nice-table tbody td.right { border-right: 1px solid #CCC; }
 .nice-table tbody td.buttons {text-align: center; }
-.nice-table tbody td.buttons a { padding: 0 1px; }
+.nice-table tbody td.buttons a {
+  border: 0;
+  padding: 0 1px;
+}
 .nice-table tbody tr:last-child td { border-bottom: 1px solid #CCC; }
 .nice-table tbody tr:hover td { background: #E2E7E9; }
 
@@ -119,4 +132,22 @@ span.small {
   text-align: center;
   top:0;
   width: 100%;
+}
+
+/********** Nice forms *********/
+.nice-form fieldset {
+  border: 1px solid #CCC;
+  -webkit-border-radius: 5px;
+}
+.nice-form fieldset legend {
+  font-weight: bold;
+  font-size: 14px;
+}
+.nice-form label {
+  display: block;
+  float: left;
+  margin: 0 10px 0 0;
+  padding: 3px 0 0 0;
+  text-align: right;
+  width: 5em;
 }

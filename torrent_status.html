@@ -5,7 +5,9 @@
     <link rel="stylesheet" href="css/master.css" type="text/css" media="screen" />
   </head>
   <body>
-    <div id="disconnected">Deluge is currently disconnected.</div>
+    <div id="disconnected">
+      <p>Currently unable to connect to the Deluge web interface. Please make sure that the extension is configured with the correct address, port and password.</p>
+    </div>
     <div id="torrent-status" style="display: none">
       <div id="header">
         <div id="logo">
@@ -54,8 +56,17 @@
     <script src="js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/Deluge.Formatters.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" charset="utf-8">
-      var WEBUI_URL = 'http://192.168.0.2:10002';
+      var ADDRESS = localStorage.deluge_address;
+      var PORT = localStorage.deluge_port;
+
+      if(PORT) {
+        var _port = ':' + PORT;
+      } else {
+        var _port = '';
+      }
+      var WEBUI_URL = ADDRESS +  _port;
       var ENDPOINT = WEBUI_URL + '/json';
+
       var INTERVAL_UI = 0;
       // Notice: This might not be in order (order being queue position).
       var STORED_TORRENT_STATE = {};
