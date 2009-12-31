@@ -4,7 +4,7 @@
   <head>
     <script src="js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" charset="utf-8">
-      var ENDPOINT = 'http://192.168.0.2:10002/json'
+      var ENDPOINT = 'http://192.168.0.2:10002/json';
 
       // Check the status of Deluge webUI. Will check that the UI can be reached
       // at the URL provided in the options and also that it is logged in and connected
@@ -26,38 +26,38 @@
         //
         //
         function login() {
-          console.log('deluge: attempting to login now...')
+          console.log('deluge: attempting to login now...');
           $.ajax({
             type: 'POST',
             dataType: 'json',
             url: ENDPOINT,
             data: JSON.stringify({method: 'auth.login', params: ['deluge'], id: '-2'}),
             success: function(obj) {
-              if(obj && obj['result']) {
-                console.log('deluge: now logged in!')
-                check_connection()
-                return
+              if(obj && obj.result) {
+                console.log('deluge: now logged in!');
+                check_connection();
+                return;
               }
 
-              console.log('deluge: failed to login :(')
+              console.log('deluge: failed to login :(');
               if(args.error) {
-                args.error(obj)
+                args.error(obj);
               }
             },
             error: function(obj, status, error) {
-              console.log('deluge: unable to perform ajax request.')
+              console.log('deluge: unable to perform ajax request.');
               if(args.error) {
-                args.error(obj)
+                args.error(obj);
               }
             }
-          })
+          });
         }
 
         // Performs a check to make sure Deluge is connected to a daemon
         // if not then the provided errror callback is called otherwise the
         // provided success callback is called.
         function check_connection() {
-          console.log('deluge: checking daemon connection status.')
+          console.log('deluge: checking daemon connection status.');
 
           $.ajax({
             type: 'POST',
@@ -65,21 +65,21 @@
             url: ENDPOINT,
             data: JSON.stringify({method: 'web.connected', params:[], id: '-3'}),
             success: function(obj) {
-              if(obj && obj['result']) {
-                console.log('deluge: connected!')
-                args.success(obj)
-                return
+              if(obj && obj.result) {
+                console.log('deluge: connected!');
+                args.success(obj);
+                return;
               }
 
-              console.log('deluge: could not find connection to daemon.')
-              args.error(obj)
+              console.log('deluge: could not find connection to daemon.');
+              args.error(obj);
             },
             error: function(obj, status, error) {
               if(args.error) {
-                args.error(obj)
+                args.error(obj);
               }
             }
-          })
+          });
         }
 
         //
@@ -92,34 +92,47 @@
           url: ENDPOINT,
           data: JSON.stringify({method: 'auth.check_session', params: [], id: '-1'}),
           success: function(obj) {
-            if(obj && obj['result']) {
-              console.log('deluge: already logged in!')
-              check_connection()
-              return
+            if(obj && obj.result) {
+              console.log('deluge: already logged in!');
+              check_connection();
+              return;
             }
-            console.log('deluge: currently not logged in.')
-            login()
+            console.log('deluge: currently not logged in.');
+            login();
           },
           error: function(obj, status, error) {
-            console.log('deluge: unable to perform ajax request, settings correct?')
+            console.log('deluge: unable to perform ajax request, settings correct?');
             if(args.error) {
-              args.error(obj)
+              args.error(obj);
             }
           }
-        })
+        });
+      }
+
+      // Attempts to find the torrent_status.html page if it's active.
+      // Will return the DOMWindow is found otherwise null.
+      function getStatusPage() {
+        var views = chrome.extension.getViews();
+
+        for(var i = 0; i < views.length; i++) {
+          if(views[i].location.pathname == '/torrent_status.html') {
+            return views[i];
+          }
+        }
+        return null;
       }
 
       // Change the page icon and tooltip for an active deluge state.
       // Also if visiable it will hide the popup disconnected message and show
       // the torrent status listings.
       function enable_icon() {
-        chrome.browserAction.setIcon({path: 'images/icons/deluge_active.png'})
-        chrome.browserAction.setTitle({title: 'Deluge - Torrent information in Chrome!'})
+        chrome.browserAction.setIcon({path: 'images/icons/deluge_active.png'});
+        chrome.browserAction.setTitle({title: 'Deluge - Torrent information in Chrome!'});
         // Enable torrent status view in the popup.
-        var view = getStatusPage()
-        if(view != null) {
-          $('#torrent-status', view.document).show()
-          $('#disconnected', view.document).hide()
+        var view = getStatusPage();
+        if(view !== null) {
+          $('#torrent-status', view.document).show();
+          $('#disconnected', view.document).hide();
         }
       }
 
@@ -127,45 +140,31 @@
       // Also, if visiable, will change the popup content to hide the torrent
       // status listings and show the disconnected message.
       function disable_icon() {
-        chrome.browserAction.setIcon({path: 'images/icons/deluge.png'})
-        chrome.browserAction.setTitle({title: 'Could not connect to deluge!'})
+        chrome.browserAction.setIcon({path: 'images/icons/deluge.png'});
+        chrome.browserAction.setTitle({title: 'Could not connect to deluge!'});
         // Disable torrent status view in the popup.
-        var view = getStatusPage()
-        if(view != null) {
-          $('#torrent-status', view.document).hide()
-          $('#disconnected', view.document).show()
+        var view = getStatusPage();
+        if(view !== null) {
+          $('#torrent-status', view.document).hide();
+          $('#disconnected', view.document).show();
         }
-      }
-
-      // Attempts to find the torrent_status.html page if it's active.
-      // Will return the DOMWindow is found otherwise null.
-      function getStatusPage() {
-        var views = chrome.extension.getViews()
-
-        for(var i = 0; i < views.length; i++) {
-          if(views[i].location.pathname == '/torrent_status.html') {
-            return views[i]
-          }
-        }
-
-        return null
       }
 
       // Perform an inital checkup on page load, and setup the interval to check
       // every x minutes.
-      var INTERVAL_CHECK = 0
+      var INTERVAL_CHECK = 0;
       $(document).ready(function() {
         // Check every minute.
         // Might change this to be higher if it becomes a problem.
         // However it only does a max of 3 ajax calls so should be fine every minute.
         if(!INTERVAL_CHECK) {
-          INTERVAL_CHECK = setInterval('deluge_status_check({success: enable_icon, error: disable_icon})', 60000)
+          INTERVAL_CHECK = setInterval('deluge_status_check({success: enable_icon, error: disable_icon})', 60000);
         }
         deluge_status_check({
           success: enable_icon,
           error:  disable_icon
-        })
-      })
+        });
+      });
     </script>
 
   </head>
