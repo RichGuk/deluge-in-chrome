@@ -1,0 +1,122 @@
+body {
+  color: #373737;
+  font-family: "MS Trebuchet", Arial, Helvetica, sans-serif;
+  font-size: 75%;
+  padding: 0 20px;
+}
+.clr { clear: both; }
+
+span.small {
+  color: #888;
+  font-size: 10px;
+}
+
+#torrent-status { width: 750px; }
+
+#logo { float: left; }
+
+#logo a {
+  background: url(../images/deluge.png) no-repeat left top;
+  display: block;
+  text-decoration: none;
+}
+#logo a .title {
+  color: #4D6077;
+  display: inline;
+  font-size: 35px;
+  font-weight: bold;
+  margin: 0 0 0 35px;
+  padding: 0 0 15px 0;
+}
+#logo a .subtitle {
+  color: #8A8A8A;
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 0 60px;
+}
+
+#global-information {
+  color: #505050;
+  float: right;
+  line-height: 1.2em;
+  margin: 5px 0 0 0;
+  text-align: right;
+}
+#global-information span {
+  color: #000000;
+  font-weight: bold;
+}
+
+#torrents { margin: 15px 0 0 0; }
+
+#key { margin: 10px 0 0 0; }
+#key span {
+  color: #555;
+  display: inline;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+#key img { vertical-align: bottom; }
+
+/********** Table *********/
+.nice-table thead { background: #004663 url(../images/table_header.png) repeat-x top left; }
+.nice-table thead th {
+  color: #FFFFFF;
+  background: url(../images/table_header_div.png) no-repeat 3px right;
+  font-size: 12px;
+  font-weight: normal;
+  height: 26px;
+  padding: 0 10px;
+  text-align: left;
+}
+.nice-table thead th span.small {
+  color: #CCC;
+  font-size: 10px;
+}
+.nice-table thead th.left { -webkit-border-top-left-radius: 5px; }
+.nice-table thead th.right {
+  -webkit-border-top-right-radius: 5px;
+  background: none;
+}
+.nice-table tbody {
+  height: 100px;
+  overflow: auto;
+}
+.nice-table tbody td {
+  border-bottom: 1px dotted #CCC;
+  padding: 5px 5px;
+}
+.nice-table tbody td.left { border-left: 1px solid #CCC; }
+.nice-table tbody td.right { border-right: 1px solid #CCC; }
+.nice-table tbody td.buttons {text-align: center; }
+.nice-table tbody td.buttons a { padding: 0 1px; }
+.nice-table tbody tr:last-child td { border-bottom: 1px solid #CCC; }
+.nice-table tbody tr:hover td { background: #E2E7E9; }
+
+/********** Progress bar *********/
+.progress-bar {
+  -webkit-border-radius: 5px;
+  background: #CCC;
+  border: 1px solid #222;
+  position: relative;
+  width: 140px;
+}
+.progress-bar .progress {
+  background: #4A7C91 url(../images/progress_bar.png) repeat-x top left;
+  height: 14px;
+  width: 0%;
+  text-align: center;
+}
+.progress-bar .progress span {
+  color: #FFF;
+  display: block;
+  font-size: 11px;
+  font-family: Verdana;
+  left:0;
+  position: absolute;
+  text-align: center;
+  top:0;
+  width: 100%;
+}

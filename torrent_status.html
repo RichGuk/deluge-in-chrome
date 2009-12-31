@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Deluge - torrent information in Chrome</title>
+    <link rel="stylesheet" href="css/status.css" type="text/css" media="screen" />
+  </head>
+  <body>
+    <div id="disconnected">Deluge is currently disconnected.</div>
+    <div id="torrent-status" style="display: none">
+      <div id="header">
+        <div id="logo">
+          <a href="#" title="Go to Deluge WebUI!">
+            <span class="title">Deluge</span>
+            <span class="subtitle">Torrent information in Chrome</span>
+          </a>
+        </div>
+        <div id="global-information">
+          Total torrents: <span class="all">0</span><br />
+          Downloading: <span class="downloading">0</span>
+          Seeding: <span class="seeding">0</span><br />
+          Paused: <span class="paused">0</span>
+          Queued: <span class="queued">0</span>
+        </div>
+        <div class="clr"></div>
+      </div>
+
+      <div id="torrents">
+        <table class="nice-table" width="100%" cellpadding="0" cellspacing="0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Size</th>
+              <th>Progress</th>
+              <th>Speed <span class="small">(D) - (U)</span></th>
+              <th>ETA</th>
+              <th class="right" width="77">&nbsp;</th>
+            </tr>
+
+            <tbody>
+            </tbody>
+        </table>
+      </div>
+
+      <div id="key">
+        <span>Key:</span>
+        <img src="images/start.png" alt="S" /> Start&nbsp;
+        <img src="images/pause.png" alt="P" /> Pause&nbsp;
+        <img src="images/up.png" alt="U" /> Move up&nbsp;
+        <img src="images/down.png" alt="D" /> Move down&nbsp;
+        <img src="images/manage_active.png" alt="M" /> Toggle auto-managed
+      </div>
+    </div> <!-- torrent-status -->
+    <script src="js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/Deluge.Formatters.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+      var WEBUI_URL = 'http://192.168.0.2:10002'
+      var ENDPOINT = WEBUI_URL + '/json'
+      var INTERVAL_UI = 0
+      // Notice: This might not be in order (order being queue position).
+      var STORED_TORRENT_STATE = {}
+      var COUNTER = 0
+
+      // Updates the entire torrent_status.html UI elements with fresh data
+      // from deluge.
+      function update_ui() {
+        COUNTER++
+
+        $.post(ENDPOINT,
+          JSON.stringify({method: 'web.update_ui',
+            params: [[
+              'queue', 'name', 'total_size', 'state', 'progress',
+              'download_payload_rate', 'upload_payload_rate', 'eta',
+              'ratio', 'is_auto_managed'
+            ], {}], id: COUNTER}),
+          function(obj, status) {
+            if(!obj || obj.error != null || !obj.result) {
+              console.log('deluge: error fetching torrent status information!')
+              return
+            }
+            update_torrent_states(obj.result.filters['state'])
+            update_torrents(obj.result.torrents)
+          }, 'json')
+      }
+
+      // Updates the torrent state UI elements, number of torrents, downloading
+      // torrents, seeding, etc...
+      function update_torrent_states(states) {
+        for(var i in states) {
+          var id = states[i][0].toLowerCase()
+          var val = states[i][1]
+
+          $('#global-information .' + id).html(val)
+        }
+      }
+
+      // Updates the main torrent listing table with the list provided by
+      // the torrents parameter.
+      function update_torrents(torrents) {
+        if(!torrents) {
+          console.log('deluge: missing torrent information.')
+          return false
+        }
+
+        var sorted_torrents = []
+        for(var torrent_id in torrents) {
+          sorted_torrents.push([torrent_id, torrents[torrent_id]])
+        }
+
+        // Sort the torrents list based on queue position.
+        sorted_torrents = sorted_torrents.sort(function(a, b) {
+            var q1 = a[1]['queue'], q2 = b[1]['queue']
+
+            if(q1 < q2) {
+              return -1
+            }
+            if(q1 > q2) {
+              return 1
+            }
+            return 0
+          })
+
+        // Simple method of updating the table, lets just replace the tbody content.
+        var tbody = $('<tbody>')
+
+        for(var i = 0; i < sorted_torrents.length; i++) {
+          var id = sorted_torrents[i][0]
+          var torrent = sorted_torrents[i][1]
+
+          // Update / add to the stored torrents variable - so we can access
+          // the latest state of torrents in other functions.
+          eval('STORED_TORRENT_STATE.' + id + '= torrent')
+
+          var buttons = $('<td>').addClass('right buttons')
+          if(torrent['state'].toLowerCase() == 'paused') {
+            buttons.append('<a href="#resume" class="pause-resume" title="Resume"><img src="images/start.png" alt="P" /></a>')
+          } else {
+            buttons.append('<a href="#pause" class="pause-resume" title="Pause"><img src="images/pause.png" alt="P" /></a>')
+          }
+          buttons.append('<a href="#up" class="queue-up" title="Move up"><img src="images/up.png" alt="U" /></a>')
+          buttons.append('<a href="#down" class="queue-down" title="Move down"><img src="images/down.png" alt="D" /></a>')
+          if(torrent['is_auto_managed']) {
+            buttons.append('<a href="#managed" class="auto-managed" title="Turn off auto managed"><img src="images/manage_active.png" alt="M" /></a>')
+          } else {
+            buttons.append('<a href="#managed" class="auto-managed" title="Turn on auto managed"><img src="images/manage.png" alt="M" /></a>')
+          }
+
+
+          var progress_bar = $('<div>').addClass('progress-bar')
+          var progress_bar_inner = $('<div>').addClass('progress')
+          var percent = (Math.round(torrent['progress'] * Math.pow(10,2)) / Math.pow(10, 2)) + '%'
+
+          // Set the width to the current progress of the torrent, so x percent.
+          progress_bar_inner.css('width', percent)
+          // Add some text based on state and percent like "Downloading 80%"
+          progress_bar_inner.append($('<span>').html(torrent['state'] + ' ' + percent))
+          progress_bar.append(progress_bar_inner)
+
+          // Work out the torrent size.
+          var torrent_size = fsize(torrent['total_size'])
+          var torrent_speed = fspeed(torrent['download_payload_rate']) + ' - ' + fspeed(torrent['upload_payload_rate'])
+          var queue = torrent['queue'] + 1
+          if(queue <= 0) {
+            queue = ''
+          }
+          var tr = $('<tr>').attr('id', id)
+          tr.append($('<td>').addClass('left').html(queue))
+          tr.append($('<td>').html(torrent['name']))
+          tr.append($('<td>').html(torrent_size))
+          tr.append($('<td>').html(progress_bar))
+          tr.append($('<td>').html(torrent_speed))
+          tr.append($('<td>').html(ftime(torrent['eta'])))
+          tr.append(buttons)
+
+          tbody.append(tr)
+        }
+        // Now update the old tbody with the new content.
+        $('#torrents table tbody').replaceWith(tbody)
+      }
+
+      $('.buttons .auto-managed').live('click', function() {
+        var parent = $(this).parents('tr')
+        var torrent_id = parent.attr('id')
+        var torrent = eval('STORED_TORRENT_STATE.' + torrent_id)
+        var auto_managed = !torrent['is_auto_managed']
+
+        COUNTER++
+        $.post(ENDPOINT,
+          JSON.stringify({method: 'core.set_torrent_auto_managed', params: [
+            torrent_id,
+            auto_managed
+          ], id: COUNTER}),
+          function(obj, status) {
+            update_ui()
+          },'json')
+      })
+
+      $('.buttons .pause-resume').live('click', function() {
+        var parent = $(this).parents('tr')
+        var torrent_id = parent.attr('id')
+        var torrent = eval('STORED_TORRENT_STATE.' + torrent_id)
+        var _method = torrent['state'] == 'Paused' ? 'core.resume_torrent' : 'core.pause_torrent'
+
+        COUNTER++
+        $.post(ENDPOINT,
+          JSON.stringify({method: _method, params: [[torrent_id]], id: COUNTER}),
+          function(obj, status) {
+            // Just update the UI, should reflect any changes.
+            update_ui()
+          }, 'json')
+
+        return false
+      })
+
+      $('.buttons .queue-up').live('click', function() {
+        var parent = $(this).parents('tr')
+        var torrent_id = parent.attr('id')
+
+        COUNTER++
+        $.post(ENDPOINT,
+          JSON.stringify({method: 'core.queue_up', params: [[
+            torrent_id
+          ]], id: COUNTER}),
+          update_ui,
+          'json')
+      })
+
+      $('.buttons .queue-down').live('click', function() {
+        var parent = $(this).parents('tr')
+        var torrent_id = parent.attr('id')
+
+        COUNTER++
+        $.post(ENDPOINT,
+          JSON.stringify({method: 'core.queue_down', params: [[
+            torrent_id
+          ]], id: COUNTER}),
+          update_ui,
+          'json')
+      })
+
+      $('#logo a').click(function() {
+        // TODO: Add a check to make sure it's not already open in a tab.
+        // Switch to that tab if it is.
+        chrome.tabs.create({url: WEBUI_URL})
+        window.close()
+        return false
+      })
+
+      $(document).ready(function() {
+        // Call the status check method in the background page on load.
+        var background = chrome.extension.getBackgroundPage()
+        background.deluge_status_check({
+          success: function(obj) {
+            background.enable_icon()
+            // Make sure we have the latest UI.
+            update_ui()
+            // And we'll udate the UI every x seconds too.
+            if(!INTERVAL_UI) {
+              INTERVAL_UI = setInterval('update_ui()', 2000)
+            }
+          },
+          error: function(obj) {
+            background.disable_icon()
+            // No need to pointlessly update the UI.
+            clearInterval(INTERVAL_UI)
+          }
+        })
+      })
+    </script>
+  </body>
+</html>

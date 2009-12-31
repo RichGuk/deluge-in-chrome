@@ -11,9 +11,10 @@
   "background_page": "background.html",
   "browser_action": {
     "default_icon": "images/icons/deluge.png",
-    "default_title": "Could not connect to deluge!"
+    "default_title": "Could not connect to deluge!",
+    "popup": "torrent_status.html"
   },
   "permissions": [
-    "http://*/*"
+     "tabs", "http://*/*"
   ]
 }
