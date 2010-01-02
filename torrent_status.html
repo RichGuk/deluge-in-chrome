@@ -72,8 +72,12 @@
       var STORED_TORRENT_STATE = {};
       var COUNTER = 0;
 
-      // Updates the torrent state UI elements, number of torrents, downloading
-      // torrents, seeding, etc...
+      /**
+       * Update the torrent state UI elements.
+       * Number of downloading torrents, seeding etc...
+       *
+       * @param {object} states The different type of states returned by Deluge.
+       */
       function update_torrent_states(states) {
         for(var i in states) {
           if (states.hasOwnProperty(i)) {
@@ -85,8 +89,11 @@
         }
       }
 
-      // Updates the main torrent listing table with the list provided by
-      // the torrents parameter.
+      /**
+       * Update the torrent listings table with the latest torrent information.
+       *
+       * @params {object} List of torrent information.
+       */
       function update_torrents(torrents) {
         if(!torrents) {
           console.log('deluge: missing torrent information.');
@@ -171,8 +178,11 @@
         $('#torrents table tbody').replaceWith(tbody);
       }
 
-      // Updates the entire torrent_status.html UI elements with fresh data
-      // from deluge.
+
+      /**
+       * Fetch latest torrent information from Deluge and update various
+       * variables and UI elements.
+       */
       function update_ui() {
         COUNTER++;
 
