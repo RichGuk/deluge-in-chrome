@@ -282,7 +282,7 @@
             update_ui();
             // And we'll udate the UI every x seconds too.
             if(!INTERVAL_UI) {
-              // INTERVAL_UI = setInterval('update_ui()', 2000);
+              INTERVAL_UI = setInterval('update_ui()', 2000);
             }
           },
           error: function(obj) {
