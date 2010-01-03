@@ -292,6 +292,8 @@
          if(request.msg == 'add_torrent_from_url') {
            add_torrent_from_url(request, sender, sendResponse);
            return;
+         } else if(request.msg == 'enable_download_icon') {
+           sendResponse(localStorage.deluge_download_icon);
          }
 
          // We need to send a reponse, even if it's empty.

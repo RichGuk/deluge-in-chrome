@@ -151,3 +151,11 @@ span.small {
   text-align: right;
   width: 5em;
 }
+.nice-form label span {
+  color: #FF3737;
+}
+.nice-form label.normal {
+  display: inline;
+  float: none;
+  width: auto;
+}

@@ -49,6 +49,11 @@
             <label>Password:</label>
             <input type="text" name="password" id="password" />
           </p>
+
+          <p>
+            <input type="checkbox" name="enable_download_torrent" id="enable_download_torrent" value="1" />
+            <label class="normal" for="enable_download_torrent"> Enable download torrent icon? <span>(experimental)</span></label>
+          </p>
         </fieldset>
 
         <div class="buttons">
@@ -70,20 +75,21 @@
         var address = '';
 
         address = localStorage.deluge_address;
-        if(!address) {
-          address = 'http://';
-        }
         $('#address').val(address);
         $('#port').val(localStorage.deluge_port);
         $('#password').val(localStorage.deluge_password);
-
-        console.log('deluge: restored options in options page');
+        if(localStorage.deluge_download_icon == 'true') {
+          $('#enable_download_torrent').attr('checked', 'checked');
+        } else {
+          $('#enable_download_torrent').removeAttr('checked');
+        }
       }
 
       function save_options() {
         localStorage.deluge_address = $('#address').val();
         localStorage.deluge_port = $('#port').val();
         localStorage.deluge_password = $('#password').val();
+        localStorage.deluge_download_icon = $('#enable_download_torrent').is(':checked') ? true : false;
 
         var background = chrome.extension.getBackgroundPage();
         background.deluge_status_check({
