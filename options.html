@@ -36,7 +36,7 @@
           <legend>Options</legend>
           <p>
             <label>Address:</label>
-            <input type="text" name="address" id="address" style="width: 300px" />
+            <input type="text" name="address" id="address" style="width: 300px" placeholder="http://" />
           </p>
 
           <p>
@@ -95,12 +95,6 @@
 
 
       $(document).ready(function() {
-        $('#address').blur(function() {
-          if($(this).val() == '') {
-            $(this).val('http://');
-          }
-        });
-
         $('.buttons .save').live('click', function() {
           save_options();
           window.close();
