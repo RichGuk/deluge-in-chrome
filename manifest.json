@@ -14,6 +14,12 @@
     "default_title": "Could not connect to deluge!",
     "popup": "torrent_status.html"
   },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["js/jquery-1.3.2.min.js", "js/add_torrent.js"]
+    }
+  ],
   "permissions": [
      "tabs", "http://*/*", "https://*/*"
   ],
