@@ -47,7 +47,7 @@
 
           <p>
             <label>Password:</label>
-            <input type="text" name="password" id="password" />
+            <input type="password" name="password" id="password" />
           </p>
 
           <p>
@@ -77,7 +77,6 @@
         address = localStorage.deluge_address;
         $('#address').val(address);
         $('#port').val(localStorage.deluge_port);
-        $('#password').val(localStorage.deluge_password);
         if(localStorage.deluge_download_icon == 'true') {
           $('#enable_download_torrent').attr('checked', 'checked');
         } else {
