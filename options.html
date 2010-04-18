@@ -32,6 +32,8 @@
         <p>In order to connect to the web interface with need to know some details about the web interface; The address and port number used to access the interface (http://address:port) and finally the password used to login.</p>
       </div>
 
+      <div id="status-message"></div>
+
       <form class="nice-form" style="width: 500px">
         <fieldset>
           <legend>Options</legend>
@@ -85,13 +87,37 @@
       }
 
       function save_options() {
+        var message = new Array();
         var address = $('#address').val();
+        var port = $('#port').val();
+        var password = $('#password').val();
+        var download_link = $('#enable_download_torrent').is(':checked');
+
         if(address) {
+          if(localStorage.deluge_address != address) {
+            message.push('Address updated.');
+          }
           localStorage.deluge_address = address.replace(/\/$/, '');
         }
-        localStorage.deluge_port = $('#port').val();
-        localStorage.deluge_password = $('#password').val();
-        localStorage.deluge_download_icon = $('#enable_download_torrent').is(':checked') ? true : false;
+        if(port) {
+          if(localStorage.deluge_port != port) {
+            message.push('Port updated.');
+          }
+          localStorage.deluge_port = port;
+        }
+        if(password) {
+          if(localStorage.deluge_password != password) {
+            message.push('Password updated.');
+          }
+          localStorage.deluge_password = password;
+        }
+        if(download_link
+            && String(download_link) != localStorage.deluge_download_icon) {
+          message.push('Download torrent icon enabled!');
+        } else if(String(download_link) != localStorage.deluge_download_icon) {
+          message.push('Download torrent icon disabled!');
+        }
+        localStorage.deluge_download_icon = download_link;
 
         var background = chrome.extension.getBackgroundPage();
         background.deluge_status_check({
@@ -100,6 +126,14 @@
         });
 
         console.log('deluge: options saved!');
+        if(message.length > 0) {
+          var message_text = '';
+          $.each(message, function(index, obj) {
+            message_text += obj + '<br>';
+          });
+          $('#status-message').html(message_text).fadeIn();
+          setTimeout('$("#status-message").fadeOut();', 5000);
+        }
       }
 
 

@@ -135,6 +135,13 @@ span.small {
 }
 
 /********** Nice forms *********/
+
+#status-message {
+  color: green;
+  display: none;
+  padding: 10px 0;
+}
+
 .nice-form fieldset {
   border: 1px solid #CCC;
   -webkit-border-radius: 5px;
