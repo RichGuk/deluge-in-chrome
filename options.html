@@ -85,7 +85,10 @@
       }
 
       function save_options() {
-        localStorage.deluge_address = $('#address').val();
+        var address = $('#address').val();
+        if(address) {
+          localStorage.deluge_address = address.replace(/\/$/, '');
+        }
         localStorage.deluge_port = $('#port').val();
         localStorage.deluge_password = $('#password').val();
         localStorage.deluge_download_icon = $('#enable_download_torrent').is(':checked') ? true : false;

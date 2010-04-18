@@ -49,7 +49,6 @@ function show_download_icon() {
 chrome.extension.sendRequest({msg: 'enable_download_icon'}, function(response) {
   console.log(response);
   if(response == 'true') {
-    console.log('w00t');
     show_download_icon();
   }
 });
