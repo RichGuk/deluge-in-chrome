@@ -29,7 +29,7 @@
       </div>
       <div class="chrome-sub-header">
         <p>This extension requires an accessible version of Deluge web interface to be running. Please refer to the <a href="http://deluge-torrent.org/" target="_blank">Deluge documentation</a> on how to get this working.</p>
-        <p>In order to connect to the web interface with need to know some details about the web interface; The address and port number used to access the interface (http://address:port) and finally the password used to login.</p>
+        <p>In order to connect to the web interface with need to know some details about the web interface. The address and port number used to access the interface (http://address:port) and finally the password used to login.</p>
       </div>
 
       <div id="status-message"></div>
@@ -79,6 +79,7 @@
         address = localStorage.deluge_address;
         $('#address').val(address);
         $('#port').val(localStorage.deluge_port);
+        $('#password').val(localStorage.deluge_password);
         if(localStorage.deluge_download_icon == 'true') {
           $('#enable_download_torrent').attr('checked', 'checked');
         } else {
