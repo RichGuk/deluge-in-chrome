@@ -60,6 +60,11 @@ span.small {
 
 #torrents { margin: 15px 0 0 0; }
 
+#torrents .name {
+  max-width: 215px;
+  word-wrap: break-word;
+}
+
 #key { margin: 10px 0 0 0; }
 #key span {
   color: #555;

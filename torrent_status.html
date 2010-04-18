@@ -166,7 +166,7 @@
           }
           var tr = $('<tr>').attr('id', id);
           tr.append($('<td>').addClass('left').html(queue));
-          tr.append($('<td>').html(torrent.name));
+          tr.append($('<td>').html(torrent.name).addClass('name'));
           tr.append($('<td>').html(torrent_size));
           tr.append($('<td>').html(progress_bar));
           tr.append($('<td>').html(torrent_speed));
