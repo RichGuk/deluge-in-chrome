@@ -105,7 +105,21 @@ span.small {
 }
 .nice-table tbody td.left { border-left: 1px solid #CCC; }
 .nice-table tbody td.right { border-right: 1px solid #CCC; }
-.nice-table tbody td.buttons {text-align: center; }
+.nice-table tbody td.buttons {
+  position: relative;
+  width: 100px;
+  text-align: center;
+}
+.nice-table tbody td.buttons .delete-options {
+  -webkit-border-radius: 3px;
+  background: #011F2C;
+  height: 18px;
+  margin-top: -20px;
+  padding: 2px 0 0 0;
+  position: relative;
+  width: 0;
+  opacity: 0.9;
+}
 .nice-table tbody td.buttons a {
   border: 0;
   padding: 0 1px;
