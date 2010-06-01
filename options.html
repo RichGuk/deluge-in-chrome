@@ -29,7 +29,7 @@
       </div>
       <div class="chrome-sub-header">
         <p>This extension requires an accessible version of Deluge web interface to be running. Please refer to the <a href="http://deluge-torrent.org/" target="_blank">Deluge documentation</a> on how to get this working.</p>
-        <p>In order to connect to the web interface with need to know some details about the web interface. The address and port number used to access the interface (http://address:port) and finally the password used to login.</p>
+        <p>In order to connect to the web interface with need to know some details about the web interface. The address used to access the interface (http://address:port) and finally the password used to login.</p>
       </div>
 
       <div id="status-message"></div>
@@ -40,11 +40,6 @@
           <p>
             <label>Address:</label>
             <input type="text" name="address" id="address" style="width: 300px" placeholder="http://" />
-          </p>
-
-          <p>
-            <label>Port:</label>
-            <input type="text" name="port" id="port" style="width: 40px" />
           </p>
 
           <p>
@@ -78,7 +73,6 @@
 
         address = localStorage.deluge_address;
         $('#address').val(address);
-        $('#port').val(localStorage.deluge_port);
         $('#password').val(localStorage.deluge_password);
         if(localStorage.deluge_download_icon == 'true') {
           $('#enable_download_torrent').attr('checked', 'checked');
@@ -90,7 +84,6 @@
       function save_options() {
         var message = new Array();
         var address = $('#address').val();
-        var port = $('#port').val();
         var password = $('#password').val();
         var download_link = $('#enable_download_torrent').is(':checked');
 
@@ -99,12 +92,6 @@
             message.push('Address updated.');
           }
           localStorage.deluge_address = address.replace(/\/$/, '');
-        }
-        if(port) {
-          if(localStorage.deluge_port != port) {
-            message.push('Port updated.');
-          }
-          localStorage.deluge_port = port;
         }
         if(password) {
           if(localStorage.deluge_password != password) {

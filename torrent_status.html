@@ -60,16 +60,7 @@
     <script src="js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/Deluge.Formatters.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" charset="utf-8">
-      var ADDRESS = localStorage.deluge_address;
-      var PORT = localStorage.deluge_port;
-
-      if(PORT) {
-        var _port = ':' + PORT;
-      } else {
-        var _port = '';
-      }
-      var WEBUI_URL = ADDRESS +  _port;
-      var ENDPOINT = WEBUI_URL + '/json';
+      var ENDPOINT = localStorage.deluge_address + '/json';
 
       // Used to store the timer.
       var INTERVAL_UI = 0;
@@ -328,7 +319,7 @@
       $('#logo a').click(function() {
         // TODO: Add a check to make sure it's not already open in a tab.
         // Switch to that tab if it is.
-        chrome.tabs.create({url: WEBUI_URL});
+        chrome.tabs.create({url: localStorage.deluge_address});
         window.close();
         return false;
       });

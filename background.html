@@ -12,15 +12,7 @@
        * @see chrome.extension.sendRequest && chrome.extension.onRequest
        */
       function add_torrent_from_url(request, sender, sendResponse) {
-        var ADDRESS = localStorage.deluge_address;
-        var PORT = localStorage.deluge_port;
-
-        if(PORT) {
-          var _port = ':' + PORT;
-        } else {
-          var _port = '';
-        }
-        var ENDPOINT = ADDRESS +  _port  + '/json';
+        var ENDPOINT = localStorage.deluge_address + '/json';
 
         /**
          * Fetches the configuration values needed to add the torrent before
@@ -126,16 +118,7 @@
        * @param args.error Callback for connection failure to Deluge.
        */
       function deluge_status_check(args) {
-        var ADDRESS = localStorage.deluge_address;
-        var PORT = localStorage.deluge_port;
-        var PASSWORD = localStorage.deluge_password;
-
-        if(PORT) {
-          var _port = ':' + PORT;
-        } else {
-          var _port = '';
-        }
-        var ENDPOINT = ADDRESS +  _port  + '/json';
+        var ENDPOINT = localStorage.deluge_address + '/json';
 
 
         /**
