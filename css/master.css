@@ -3,6 +3,7 @@ body {
   font-family: "MS Trebuchet", Arial, Helvetica, sans-serif;
   font-size: 75%;
   padding: 0 20px;
+  margin: 0px 8px 8px 8px;
 }
 
 a {
@@ -25,18 +26,18 @@ span.small {
 #logo { float: left; }
 
 #logo a {
-  background: url(../images/deluge.png) no-repeat left top;
+  background: url(../images/icons/16.png) no-repeat left 2px;
   border: 0;
   display: block;
   text-decoration: none;
 }
 #logo a .title {
   color: #4D6077;
-  display: inline;
-  font-size: 35px;
+  display: block;
+  font-size: 1.2em;
   font-weight: bold;
-  margin: 0 0 0 35px;
-  padding: 0 0 15px 0;
+  margin: 0 0 0 20px;
+  padding: 3px 0 0 0;
 }
 #logo a .subtitle {
   color: #8A8A8A;
@@ -56,9 +57,13 @@ span.small {
 #global-information span {
   color: #000000;
   font-weight: bold;
+  margin: 0 10px 0 0;
+}
+#global-information span:last-child {
+  margin: 0;
 }
 
-#torrents { margin: 15px 0 0 0; }
+#torrents { margin: 2px 0 0 0; }
 
 #torrents .name {
   max-width: 215px;
