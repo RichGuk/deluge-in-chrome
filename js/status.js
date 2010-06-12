@@ -557,12 +557,14 @@ $('.sort_torrents').click(function() {
     localStorage.sort_method = 'asc';
     link.addClass(localStorage.sort_method);
     localStorage.sort_column = link.attr('rel');
+    resume_table_refresh();
     update_ui();
     return;
   }
   // If it's the same just change the sorting order.
   localStorage.sort_method = localStorage.sort_method == 'asc' ? 'desc' : 'asc';
   link.removeClass('asc desc').addClass(localStorage.sort_method);
+  resume_table_refresh();
   update_ui();
 });
 
