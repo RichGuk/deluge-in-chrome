@@ -71,14 +71,26 @@ span.small {
 }
 
 #key { margin: 10px 0 0 0; }
-#key span {
+#key span.legend {
   color: #555;
   display: inline;
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 2px;
 }
-#key img { vertical-align: bottom; }
+#key img {
+  padding: 0 0 0px 0;
+  vertical-align: bottom;
+}
+#key .divider { height:5px; }
+
+#table-refresh-status {
+  float: left;
+  padding: 5px 0 0 90px;
+}
+#table-refresh-status span { font-weight: bold; }
+#table-refresh-status span.active { color: green; }
+#table-refresh-status span.inactive { color: red; }
 
 /********** Table *********/
 .nice-table thead { background: #004663 url(../images/table_header.png) repeat-x top left; }

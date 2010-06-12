@@ -12,6 +12,7 @@
     <div id="torrent-status" style="display: none">
       <div id="header">
         <div id="logo"><a href=""><span class="title">Deluge</span></a></div>
+        <div id="table-refresh-status" style="">Table Refresh: <span class="active">Loading...</span></div>
         <div id="global-information">
           Total torrents: <span class="all">0</span>
           Downloading: <span class="downloading">0</span>
@@ -26,6 +27,7 @@
         <table class="nice-table" width="100%" cellpadding="0" cellspacing="0">
           <thead>
             <tr>
+              <th>&nbsp;</th>
               <th>#</th>
               <th>Name</th>
               <th>Size</th>
@@ -40,16 +42,19 @@
         </table>
       </div>
 
-      <div id="key">
-        <span>Key:</span>
-        <img src="images/start.png" alt="S" /> Start&nbsp;
-        <img src="images/pause.png" alt="P" /> Pause&nbsp;
-        <img src="images/up.png" alt="U" /> Move up&nbsp;
-        <img src="images/down.png" alt="D" /> Move down&nbsp;
-        <img src="images/remove.png" alt="X" /> Delete options&nbsp;
+      <div id="key" class="global_actions">
+        <span class="legend">Key:</span>
+        <a class="start" href="#start"><img src="images/start.png" alt="S" /> Start</a>&nbsp;
+        <a class="pause" href="#pause"><img src="images/pause.png" alt="P" class="pause" /> Pause</a>&nbsp;
+        <a class="queue-up" href="#up"><img src="images/up.png" alt="U" /> Move up</a>&nbsp;
+        <a class="queue-down" href="#down"><img src="images/down.png" alt="D" /> Move down</a>&nbsp;
+        <a class="auto-managed" href="#auto-managed" title="Disable auto-managed state"><img src="images/manage_active.png" alt="M" /> <span>Disable auto-managed state</span></a>
+        <div class="divider"></div>
+        <span class="legend">Delete Key:</span>
+        <img src="images/remove.png" alt="X" /> Show delete options:&nbsp;
         <img src="images/cancel.png" alt="C" /> Cancel&nbsp;
-        <img src="images/trash.png" alt="DT" /> Delete torrent &amp; data&nbsp;
-        <img src="images/file.png" alt="T" /> Delete just torrent file
+        <a class="delete" href="#delete-data" rel="data"><img src="images/trash.png" alt="DT" /> Delete torrent &amp; data</a>
+        <a class="delete" href="#delete-file" rel="file"><img src="images/file.png" alt="T" /> Delete torrent</a>
       </div>
     </div> <!-- torrent-status -->
     <script src="js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
@@ -157,8 +162,14 @@
           if(queue <= 0) {
             queue = '';
           }
+
+          // Create a checkbox for globally applied options.
+          var checkbox = $('<input class="selected_torrents" type="checkbox"/>');
+          checkbox.attr({name: 'selected_torrents[]', value: id});
+
           var tr = $('<tr>').attr('id', id);
-          tr.append($('<td>').addClass('left').html(queue));
+          tr.append($('<td>').addClass('left').html(checkbox));
+          tr.append($('<td>').html(queue));
           tr.append($('<td>').html(torrent.name).addClass('name'));
           tr.append($('<td>').html(torrent_size));
           tr.append($('<td>').html(progress_bar));
@@ -198,10 +209,27 @@
           }, 'json');
       }
 
+
+      /**
+       * Pause the table refresh.
+       */
+       function pause_table_refresh() {
+         clearInterval(INTERVAL_UI);
+         $('#table-refresh-status span').removeClass('active').addClass('inactive').html('Paused');
+       }
+
+       /**
+        * Resume the table refresh.
+        */
+        function resume_table_refresh() {
+          INTERVAL_UI = setInterval('update_ui()', STATUS_REFRESH_INTERVAL);
+          $('#table-refresh-status span').removeClass('inactive').addClass('active').html(STATUS_REFRESH_INTERVAL / 1000 + 's');
+        }
+
       $('.buttons .delete').live('click', function() {
         // Stop the table refresh, so we can show the delete options for
         // this torrent.
-        clearInterval(INTERVAL_UI);
+        pause_table_refresh();
 
         var parent = $(this).parents('tr');
         var parent_td = $(this).parent('td');
@@ -218,6 +246,7 @@
       });
 
       $('.buttons .delete-options a').live('click', function() {
+
         var elm = $(this);
         var parent = $(this).parents('tr');
         var torrent_id = parent.attr('id');
@@ -226,11 +255,11 @@
         // If canceling remove overlay and resume refresh now and return.
         if(action == 'cancel') {
           $('.delete-options').fadeOut('fast', function() {
-            INTERVAL_UI = setInterval('update_ui()', STATUS_REFRESH_INTERVAL);
             // Force an update.
             update_ui();
+            resume_table_refresh();
           });
-          return;
+          return false;
         }
 
         var del_data = (action == 'data') ? true : false;
@@ -244,7 +273,7 @@
           function(obj, status) {
             // Remove buttons, resume refresh.
             $('.delete-options').fadeOut('fast', function() {
-              INTERVAL_UI = setInterval('update_ui()', STATUS_REFRESH_INTERVAL);
+              resume_table_refresh();
               // Force an update.
               update_ui();
             });
@@ -311,6 +340,202 @@
           'json');
       });
 
+      //
+      //Global events.
+      //
+
+      $('.selected_torrents').live('click', function() {
+        if($(this + ':checked').length > 0) {
+          pause_table_refresh();
+        } else {
+          resume_table_refresh();
+        }
+      });
+
+      // Global start (un-pause).
+      $('.global_actions .start').live('click', function() {
+        var parent = $(this).parents('tr');
+
+        // Get a list of selected torrent IDs.
+        var torrent_ids = [];
+        $('.selected_torrents:checked').each(function(i, sel) {
+          torrent_ids.push($(sel).val());
+        });
+
+        // See if we have any torrent ids to send, no point doing call if not.
+        if(torrent_ids.length == 0) {
+          return false;
+        }
+        COUNTER++;
+        $.post(ENDPOINT,
+          JSON.stringify({method: 'core.resume_torrent', params: [torrent_ids], id: COUNTER}),
+          function(obj, status) {
+            // Just update the UI, should reflect any changes.
+            update_ui();
+            resume_table_refresh();
+          }, 'json');
+
+        return false;
+      });
+
+      // Global pause.
+      $('.global_actions .pause').live('click', function() {
+        var parent = $(this).parents('tr');
+
+        // Get a list of selected torrent IDs.
+        var torrent_ids = [];
+        $('.selected_torrents:checked').each(function(i, sel) {
+          torrent_ids.push($(sel).val());
+        });
+
+        // See if we have any torrent ids to send, no point doing call if not.
+        if(torrent_ids.length == 0) {
+          return false;
+        }
+        COUNTER++;
+        $.post(ENDPOINT,
+          JSON.stringify({method: 'core.pause_torrent', params: [torrent_ids], id: COUNTER}),
+          function(obj, status) {
+            // Just update the UI, should reflect any changes.
+            update_ui();
+            resume_table_refresh();
+          }, 'json');
+
+        return false;
+      });
+
+      // Global up.
+      $('.global_actions .queue-up').live('click', function() {
+        var parent = $(this).parents('tr');
+
+        // Get a list of selected torrent IDs.
+        var torrent_ids = [];
+        $('.selected_torrents:checked').each(function(i, sel) {
+          torrent_ids.push($(sel).val());
+        });
+
+        // See if we have any torrent ids to send, no point doing call if not.
+        if(torrent_ids.length == 0) {
+          return false;
+        }
+        COUNTER++;
+        $.post(ENDPOINT,
+          JSON.stringify({method: 'core.queue_up', params: [torrent_ids], id: COUNTER}),
+          function(obj, status) {
+            // Just update the UI, should reflect any changes.
+            update_ui();
+            resume_table_refresh();
+          }, 'json');
+
+        return false;
+      });
+
+      // Global down.
+      $('.global_actions .queue-down').live('click', function() {
+        var parent = $(this).parents('tr');
+
+        // Get a list of selected torrent IDs.
+        var torrent_ids = [];
+        $('.selected_torrents:checked').each(function(i, sel) {
+          torrent_ids.push($(sel).val());
+        });
+
+        // See if we have any torrent ids to send, no point doing call if not.
+        if(torrent_ids.length == 0) {
+          return false;
+        }
+        COUNTER++;
+        $.post(ENDPOINT,
+          JSON.stringify({method: 'core.queue_down', params: [torrent_ids], id: COUNTER}),
+          function(obj, status) {
+            // Just update the UI, should reflect any changes.
+            update_ui();
+            resume_table_refresh();
+          }, 'json');
+
+        return false;
+      });
+
+      var GLOBAL_AUTO_MANAGED_STATE = true;
+      $('.global_actions .auto-managed').live('click', function() {
+        var parent = $(this).parents('tr');
+        var selected_torrents = $('.selected_torrents:checked');
+        var auto_managed_button = $(this);
+
+        // If non are selected return, no point doing anything.
+        if(selected_torrents.length == 0) {
+          return false;
+        }
+
+        selected_torrents.each(function(i, sel) {
+          var torrent_id = $(sel).val();
+
+          COUNTER++;
+          $.ajax({
+            type: 'POST',
+            url: ENDPOINT,
+            async: false,
+            data: JSON.stringify({
+              method: 'core.set_torrent_auto_managed',
+              params: [torrent_id, !GLOBAL_AUTO_MANAGED_STATE],
+              id: COUNTER
+            }),
+            success: function(obj, status) {
+              if(i == (selected_torrents.length - 1)) {
+                if(GLOBAL_AUTO_MANAGED_STATE) {
+                  $('img', auto_managed_button).attr('src', '/images/manage.png');
+                  $('span', auto_managed_button).html('Enable auto-managed state');
+                  auto_managed_button.attr('title', 'Enable auto-managed state');
+                } else {
+                  $('img', auto_managed_button).attr('src', '/images/manage_active.png');
+                  $('span', auto_managed_button).html('Disable auto-managed state');
+                  auto_managed_button.attr('title', 'Disable auto-managed state');
+                }
+                GLOBAL_AUTO_MANAGED_STATE = !GLOBAL_AUTO_MANAGED_STATE;
+
+                resume_table_refresh();
+                update_ui();
+              }
+            }
+          });
+        }); // Each
+      });
+
+      // Deleting torrents.
+      $('.global_actions .delete').live('click', function() {
+        var action = $(this).attr('rel');
+        var remove_data = (action == 'data') ? true : false;
+        var parent = $(this).parents('tr');
+        var selected_torrents = $('.selected_torrents:checked');
+
+        // If non are selected return, no point doing anything.
+        if(selected_torrents.length == 0) {
+          return false;
+        }
+
+        selected_torrents.each(function(i, sel) {
+          var torrent_id = $(sel).val();
+
+          COUNTER++;
+          $.ajax({
+            type: 'POST',
+            url: ENDPOINT,
+            async: false,
+            data: JSON.stringify({
+              method: 'core.remove_torrent',
+              params: [torrent_id, remove_data],
+              id: COUNTER
+            }),
+            success: function(obj, status) {
+              if(i == (selected_torrents.length - 1)) {
+                resume_table_refresh();
+                update_ui();
+              }
+            }
+          });
+        }); // Each
+      });
+
       $('#logo a').click(function() {
         // TODO: Add a check to make sure it's not already open in a tab.
         // Switch to that tab if it is.
@@ -329,13 +554,13 @@
             update_ui();
             // And we'll udate the UI every x seconds too.
             if(!INTERVAL_UI) {
-              INTERVAL_UI = setInterval('update_ui()', STATUS_REFRESH_INTERVAL);
+              resume_table_refresh();
             }
           },
           error: function(obj) {
             background.disable_icon();
             // No need to pointlessly update the UI.
-            clearInterval(INTERVAL_UI);
+            pause_table_refresh();
           }
         });
       });
