@@ -2,8 +2,8 @@ body {
   color: #373737;
   font-family: "MS Trebuchet", Arial, Helvetica, sans-serif;
   font-size: 75%;
-  padding: 0 20px;
-  margin: 0px 8px 8px 8px;
+  padding: 0 0;
+  margin: 0px 2px 8px 2px;
 }
 
 a {
@@ -21,7 +21,7 @@ span.small {
   font-size: 10px;
 }
 
-#torrent-status, #disconnected { width: 750px; }
+#torrent-status, #disconnected { width: 790px; }
 
 #logo { float: left; }
 
@@ -108,6 +108,16 @@ span.small {
   padding: 0 10px;
   text-align: left;
 }
+.nice-table thead th a {
+  border:0;
+  color: #FFF;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0 12px 0 0;
+}
+.nice-table thead th a.asc { background: url(../images/asc.png) no-repeat 3px right; }
+.nice-table thead th a.desc { background: url(../images/desc.png) no-repeat 3px right; }
+.nice-table thead th a.active { color: #9cd1fb; }
 .nice-table thead th span.small {
   color: #CCC;
   font-size: 10px;

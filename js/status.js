@@ -8,6 +8,69 @@ var COUNTER = 0;
 // How often should we refresh the torrent information.
 var STATUS_REFRESH_INTERVAL = 2000;
 
+
+/**
+ * Sort the torrents by the currently selected sort method.
+ */
+function sort_torrents(torrents) {
+  torrents = torrents.sort(function(a, b) {
+    switch(localStorage.sort_column) {
+      case "name":
+        a = a[1].name;
+        b = b[1].name;
+        break;
+
+      case "size":
+        a = a[1].size;
+        b = b[1].size;
+        break;
+
+      case "progress":
+        a = a[1].progress;
+        b = b[1].progress;
+        break;
+
+      case "speed":
+        a = a[1].speed;
+        b = b[1].speed;
+        break;
+
+      case "eta":
+        a = a[1].eta;
+        b = b[1].eta;
+        break;
+
+      case "queue":
+        a = a[1].queue;
+        b = b[1].queue;
+        break;
+
+      // Sort by queue asc if nothing is already set.
+      default:
+        a = a[1].queue;
+        b = b[1].queue;
+        // Set them for future use.
+        localStorage.sort_column = 'queue';
+        localStorage.sort_method = 'asc';
+        break;
+    }
+
+    if(a < b) {
+      return -1;
+    }
+    if(a > b) {
+      return 1;
+    }
+    return 0;
+  });
+
+  if(localStorage.sort_method == 'desc') {
+    torrents = torrents.reverse();
+  }
+
+  return torrents;
+}
+
 /**
  * Update the torrent state UI elements.
  * Number of downloading torrents, seeding etc...
@@ -42,19 +105,8 @@ function update_torrents(torrents) {
       sorted_torrents.push([torrent_id, torrents[torrent_id]]);
     }
   }
-
-  // Sort the torrents list based on queue position.
-  sorted_torrents = sorted_torrents.sort(function(a, b) {
-      var q1 = a[1].queue, q2 = b[1].queue;
-
-      if(q1 < q2) {
-        return -1;
-      }
-      if(q1 > q2) {
-        return 1;
-      }
-      return 0;
-    });
+  // Sort the torrents based on the sort method selected.
+  sorted_torrents = sort_torrents(sorted_torrents);
 
   // Simple method of updating the table, lets just replace the tbody content.
   var tbody = $('<tbody>');
@@ -491,6 +543,29 @@ $('.global_checkbox').click(function() {
   GLOBAL_CHECKBOX_STATE = !GLOBAL_CHECKBOX_STATE;
 });
 
+
+// Sortable columns.
+$('.sort_torrents').click(function() {
+  var link = $(this);
+  // If the link clicked is different to the active one
+  // then reset the assending order and add the active class.
+  if(link.attr('rel') != localStorage.sort_column) {
+    // Make sure none of the links are the active one.
+    $('.sort_torrents').removeClass('active asc desc');
+    link.addClass('active');
+
+    localStorage.sort_method = 'asc';
+    link.addClass(localStorage.sort_method);
+    localStorage.sort_column = link.attr('rel');
+    update_ui();
+    return;
+  }
+  // If it's the same just change the sorting order.
+  localStorage.sort_method = localStorage.sort_method == 'asc' ? 'desc' : 'asc';
+  link.removeClass('asc desc').addClass(localStorage.sort_method);
+  update_ui();
+});
+
 $('#logo a').click(function() {
   // TODO: Add a check to make sure it's not already open in a tab.
   // Switch to that tab if it is.
@@ -500,6 +575,15 @@ $('#logo a').click(function() {
 });
 
 $(document).ready(function() {
+
+  // Set the users sort column/method.
+  $('.sort_torrents').each(function(i, link) {
+    link = $(link);
+    if(link.attr('rel') == localStorage.sort_column) {
+      link.addClass('active ' + localStorage.sort_method);
+    }
+  });
+
   // Call the status check method in the background page on load.
   var background = chrome.extension.getBackgroundPage();
   background.deluge_status_check({
