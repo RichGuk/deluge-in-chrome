@@ -478,6 +478,19 @@ $('.global_actions .delete').live('click', function() {
   }); // Each
 });
 
+var GLOBAL_CHECKBOX_STATE = false;
+$('.global_checkbox').click(function() {
+  if(GLOBAL_CHECKBOX_STATE) {
+    $('.selected_torrents').removeAttr('checked');
+    resume_table_refresh();
+  } else {
+    $('.selected_torrents').attr('checked', 'checked');
+    pause_table_refresh();
+  }
+
+  GLOBAL_CHECKBOX_STATE = !GLOBAL_CHECKBOX_STATE;
+});
+
 $('#logo a').click(function() {
   // TODO: Add a check to make sure it's not already open in a tab.
   // Switch to that tab if it is.

@@ -124,7 +124,8 @@ span.small {
 }
 .nice-table tbody td {
   border-bottom: 1px dotted #CCC;
-  padding: 5px 5px;
+  padding: 5px 0 5px 8px;
+  margin-right: -2px;
 }
 .nice-table tbody td.left { border-left: 1px solid #CCC; }
 .nice-table tbody td.right { border-right: 1px solid #CCC; }
