@@ -222,6 +222,10 @@
         * Resume the table refresh.
         */
         function resume_table_refresh() {
+          if (INTERVAL_UI) {
+            clearInterval(INTERVAL_UI);
+            INTERVAL_UI = null;
+          }
           INTERVAL_UI = setInterval('update_ui()', STATUS_REFRESH_INTERVAL);
           $('#table-refresh-status span').removeClass('inactive').addClass('active').html(STATUS_REFRESH_INTERVAL / 1000 + 's');
         }
