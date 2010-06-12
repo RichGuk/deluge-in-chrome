@@ -93,6 +93,11 @@ span.small {
 #table-refresh-status span.inactive { color: red; }
 
 /********** Table *********/
+.nice-table {
+  border-spacing: 0;
+  padding: 0;
+  width: 100%;
+}
 .nice-table thead { background: #004663 url(../images/table_header.png) repeat-x top left; }
 .nice-table thead th {
   color: #FFFFFF;
@@ -111,6 +116,7 @@ span.small {
 .nice-table thead th.right {
   -webkit-border-top-right-radius: 5px;
   background: none;
+  width: 77px;
 }
 .nice-table tbody {
   height: 100px;
