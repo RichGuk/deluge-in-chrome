@@ -294,6 +294,13 @@
           success: enable_icon,
           error:  disable_icon
         });
+
+        // Handle the legacy way of setting the port.
+        // Update the user for them :).
+        if(localStorage.deluge_port && localStorage.deluge_address.search(/:[0-9]+|:$/) == -1) {
+          localStorage.deluge_address = localStorage.deluge_address + ':' + localStorage.deluge_port;
+          localStorage.removeItem('deluge_port');
+        }
       });
     </script>
 
