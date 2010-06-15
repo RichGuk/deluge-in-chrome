@@ -118,8 +118,8 @@
        * @param args.error Callback for connection failure to Deluge.
        */
       function deluge_status_check(args) {
+        var PASSWORD = localStorage.deluge_password;
         var ENDPOINT = localStorage.deluge_address + '/json';
-
 
         /**
          * Attempt to login to the web interface using the password from
