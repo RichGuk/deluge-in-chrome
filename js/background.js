@@ -40,6 +40,14 @@ var Background = (function($) {
     }
 
     /*
+     * Called when auto login failed - normally incorrect login details.
+     */
+    function auto_login_failed() {
+        // Inform anyone who's listening.
+        chrome.extension.sendRequest({ msg: 'auto_login_failed' });
+    }
+
+    /*
      * If we have login details perform a login to the Deluge webUI.
      */
     pub.login = function() {
@@ -112,7 +120,17 @@ var Background = (function($) {
                         // Login and then check status again!
                         that.login()
                             .success(function(res) {
-                                that.check_status();
+                                // If successful check status again now.
+                                if (res === true) {
+                                    that.check_status();
+                                } else {
+                                    // Wrong login - not much we can do, try
+                                    // checking in a bit.
+                                    console.log('Deluge: Incorrect login details.');
+                                    status_timer = setTimeout(check_status, status_check_error_interval);
+                                    that.deactivate();
+                                    auto_login_failed();
+                                }
                             })
                             .error(function(jqXHR, text, err) {
                                 that.deactivate();
@@ -146,6 +164,8 @@ var Background = (function($) {
         chrome.browserAction.setTitle({
             title: chrome.i18n.getMessage('browser_title')
         });
+        // Send activation to anything listening.
+        chrome.extension.sendRequest({ msg: 'extension_activated' });
     };
 
     /* Disables the extension (status messages, disabling icons, etc..).
@@ -157,6 +177,8 @@ var Background = (function($) {
         chrome.browserAction.setTitle({
             title: chrome.i18n.getMessage('browser_title_disabled')
         });
+        // Send deactivation to anything listening.
+        chrome.extension.sendRequest({ msg: 'extension_deactivated' });
     };
 
     return pub;
