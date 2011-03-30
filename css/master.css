@@ -1,11 +1,10 @@
 body {
   color: #373737;
   font-family: "MS Trebuchet", Arial, Helvetica, sans-serif;
-  font-size: 75%;
-  padding: 0 0;
-  margin: 0px 2px 8px 2px;
-  overflow-x: hidden;
+  font-size: 62.5%;
+  margin: 0;
   width: 790px;
+  overflow-x: hidden;
 }
 
 a {
@@ -14,215 +13,72 @@ a {
   text-decoration: none;
 }
 
+#overlay {
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    font-size: 1.2em;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    top: 0;
+}
+    #overlay .overlay_inner {
+        background: #F5A5A5;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        display: table; /* Allows us to shrink to content and centre with auto margin */
+        line-height: 16px;
+        margin: 0 auto;
+        padding: 1em;
+        vertical-align: middle;
+    }
+    #overlay .overlay_inner span { vertical-align: middle; }
+        #overlay .overlay_inner .error {
+            background: url(/themes/standard/images/error.png) no-repeat left top;
+            display: inline-block;
+            height: 24px;
+            line-height: 24px;
+            padding-left: 35px;
+            vertical-align: middle;
+        }
+
+table#torrent_table {
+    border-spacing: 0;
+    width: 790px;
+    font-size: 1.2em;
+}
+    .scrollbars table#torrent_table { width: 772px; }
+    table#torrent_table thead th {
+        background-image: url(/images/table_div.png), -webkit-gradient(linear, 0% 18%, 0% 52%, from(#FDFDFD), to(#E9E9E9));
+        background-repeat: no-repeat;
+        background-position: left 2px;
+        border-top: 1px solid #CCC;
+        border-bottom: 1px solid #CCC;
+        padding: 3px;
+    }
+        table#torrent_table thead th:first-child {
+            background-image: -webkit-gradient(linear, 0% 18%, 0% 52%, from(#FDFDFD), to(#E9E9E9));
+            border-left: 1px solid #CCC;
+            border-top-left-radius: 5px;
+        }
+        table#torrent_table thead th:last-child {
+            border-right: 1px solid #CCC;
+            border-top-right-radius: 5px;
+        }
+        #table_header_position { width: 20px; }
+        #table_header_name {
+            max-width: 250px;
+            text-align: left;
+        }
+        #table_header_actions { width: 100px; }
+        #table_header_progresss { width: 150px; }
+    table#torrent_table tbody tr td {
+        padding: 5px 3px;
+    }
+    table#torrent_table tbody tr:nth-child(even) {
+        background: #F4F4F4;
+    }
+
 a:hover {color: #000000;}
-
 .clr { clear: both; }
-
-span.small {
-  color: #888;
-  font-size: 10px;
-}
-
-#torrent-status, #disconnected {
-  margin: 0 auto;
-  width: 765px;
-}
-
-#header { width:760px; }
-
-#logo { float: left; }
-
-#logo a {
-  background: url(../images/icons/16.png) no-repeat left 2px;
-  border: 0;
-  display: block;
-  text-decoration: none;
-}
-#logo a .title {
-  color: #4D6077;
-  display: block;
-  font-size: 1.2em;
-  font-weight: bold;
-  margin: 0 0 0 20px;
-  padding: 3px 0 0 0;
-}
-#logo a .subtitle {
-  color: #8A8A8A;
-  display: block;
-  font-size: 16px;
-  font-weight: bold;
-  margin: 0 0 0 60px;
-}
-
-#global-information {
-  color: #505050;
-  float: right;
-  line-height: 1.2em;
-  margin: 5px 0 0 0;
-  text-align: right;
-}
-#global-information span {
-  color: #000000;
-  font-weight: bold;
-  margin: 0 10px 0 0;
-}
-#global-information span:last-child {
-  margin: 0;
-}
-
-#torrents { margin: 2px 0 0 0; }
-
-#torrents .name {
-  max-width: 215px;
-  word-wrap: break-word;
-}
-
-#key { margin: 10px 0 0 0; }
-#key span.legend {
-  color: #555;
-  display: inline;
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 2px;
-}
-#key img {
-  padding: 0 0 0px 0;
-  vertical-align: bottom;
-}
-#key .divider { height:5px; }
-
-#table-refresh-status {
-  float: left;
-  padding: 5px 0 0 90px;
-}
-#table-refresh-status span { font-weight: bold; }
-#table-refresh-status span.active { color: green; }
-#table-refresh-status span.inactive { color: red; }
-
-/********** Table *********/
-.nice-table {
-  border-spacing: 0;
-  padding: 0;
-  width: 100%;
-}
-.nice-table thead { background: #004663 url(../images/table_header.png) repeat-x top left; }
-.nice-table thead th {
-  color: #FFFFFF;
-  background: url(../images/table_header_div.png) no-repeat 3px right;
-  font-size: 12px;
-  font-weight: normal;
-  height: 26px;
-  padding: 0 10px;
-  text-align: left;
-}
-.nice-table thead th a {
-  border:0;
-  color: #FFF;
-  text-decoration: none;
-  font-weight: bold;
-  padding: 0 12px 0 0;
-}
-.nice-table thead th a.asc { background: url(../images/asc.png) no-repeat 3px right; }
-.nice-table thead th a.desc { background: url(../images/desc.png) no-repeat 3px right; }
-.nice-table thead th a.active { color: #9cd1fb; }
-.nice-table thead th span.small {
-  color: #CCC;
-  font-size: 10px;
-}
-.nice-table thead th.left { -webkit-border-top-left-radius: 5px; }
-.nice-table thead th.right {
-  -webkit-border-top-right-radius: 5px;
-  background: none;
-  width: 77px;
-}
-.nice-table tbody {
-  height: 100px;
-  overflow: auto;
-}
-.nice-table tbody td {
-  border-bottom: 1px dotted #CCC;
-  padding: 5px 0 5px 8px;
-  margin-right: -2px;
-}
-.nice-table tbody td.left { border-left: 1px solid #CCC; }
-.nice-table tbody td.right { border-right: 1px solid #CCC; }
-.nice-table tbody td.buttons {
-  position: relative;
-  width: 100px;
-  text-align: center;
-}
-.nice-table tbody td.buttons .delete-options {
-  -webkit-border-radius: 3px;
-  background: #011F2C;
-  height: 18px;
-  margin-top: -20px;
-  padding: 2px 0 0 0;
-  position: relative;
-  width: 0;
-  opacity: 0.9;
-}
-.nice-table tbody td.buttons a {
-  border: 0;
-  padding: 0 1px;
-}
-.nice-table tbody tr:last-child td { border-bottom: 1px solid #CCC; }
-.nice-table tbody tr:hover td { background: #E2E7E9; }
-
-/********** Progress bar *********/
-.progress-bar {
-  -webkit-border-radius: 5px;
-  background: #CCC;
-  border: 1px solid #222;
-  position: relative;
-  width: 140px;
-}
-.progress-bar .progress {
-  background: #4A7C91 url(../images/progress_bar.png) repeat-x top left;
-  height: 14px;
-  width: 0%;
-  text-align: center;
-}
-.progress-bar .progress span {
-  color: #FFF;
-  display: block;
-  font-size: 11px;
-  font-family: Verdana;
-  left:0;
-  position: absolute;
-  text-align: center;
-  top:0;
-  width: 100%;
-}
-
-/********** Nice forms *********/
-
-#status-message {
-  color: green;
-  display: none;
-  padding: 10px 0;
-}
-
-.nice-form fieldset {
-  border: 1px solid #CCC;
-  -webkit-border-radius: 5px;
-}
-.nice-form fieldset legend {
-  font-weight: bold;
-  font-size: 14px;
-}
-.nice-form label {
-  display: block;
-  float: left;
-  margin: 0 10px 0 0;
-  padding: 3px 0 0 0;
-  text-align: right;
-  width: 5em;
-}
-.nice-form label span {
-  color: #FF3737;
-}
-.nice-form label.normal {
-  display: inline;
-  float: none;
-  width: auto;
-}
