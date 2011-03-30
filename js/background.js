@@ -87,7 +87,7 @@ var Background = (function($) {
      *
      * @return API promise - can attach additional success/error callbacks.
      * */
-    pub.check_status = function() {
+    pub.check_status = function(options) {
         var that = this;
 
         function check_status() {
@@ -97,7 +97,7 @@ var Background = (function($) {
         // Clear any existing timers.
         clearTimeout(status_timer);
 
-        var api = Deluge.api('web.connected')
+        var api = Deluge.api('web.connected', [], options)
             .success(function(response) {
                 // Connected: activate the extension.
                 if (response === true) {
