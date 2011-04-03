@@ -1,9 +1,88 @@
+/*
+ * Module responsible for fetching, storing and sorting torrent objects.
+ */
+var Torrents = (function($) {
+    console.log('creating...');
+    var pub = {};
+    // Stores all torrent data, using array so it can be sorted.
+    var torrents = [];
+
+    function sortCallback(a, b) {
+        a = a.name;
+        b = b.name;
+
+        if(a < b) {
+            return -1;
+        }
+        if(a > b) {
+            return 1;
+        }
+        return 0;
+    }
+
+    pub.get_all = function() {
+        return torrents;
+    };
+
+    pub.get_by_id = function(val) {
+        for (var i = 0; i < torrents.length; i++) {
+            if (torrents[i].id == val) {
+                return torrents[i];
+            }
+        }
+    };
+
+    pub.cleanup = function() {
+        for(var i=0; i < torrents.length; i++) {
+            delete torrents[i];
+        }
+        torrents = null;
+    };
+
+    pub.update = function() {
+        var that = this;
+        var api = Deluge.api('web.update_ui', [[
+            'queue', 'name', 'total_size', 'state', 'progress',
+            'download_payload_rate', 'upload_payload_rate', 'eta',
+            'ratio', 'is_auto_managed'], {}], { timeout: 2000 })
+            .success(function(response) {
+                // Reset torrents array.
+                that.cleanup();
+                torrents = [];
+                for(var id in response.torrents) {
+                    if (response.torrents.hasOwnProperty(id)) {
+                        torrents.push(new Torrent(id, response.torrents[id]));
+                    }
+                }
+                response = null;
+
+                // Sort the torrents.
+                torrents.sort(sortCallback);
+                if (localStorage.sort_method == 'desc') {
+                    torrents.reverse();
+                }
+            });
+
+        return api;
+    };
+
+    return pub;
+}(jQuery));
+
+/*
+ * Responsible for all display, page or functional control on the status page.
+ *
+ * - Setting refresh timers.
+ * - Rendering HTML for table.
+ * - Logic for action buttons.
+ */
 jQuery(document).ready(function($) {
     // Get extension background page for use within the code.
     var background_page = chrome.extension.getBackgroundPage();
-
-    // Setup some initial translations.
-    $('#loading_data_text').html(chrome.i18n.getMessage('loading_data'));
+    // Setup timer information.
+    var refresh_timer = null, refresh_interval = 4000;
+    // Store the extension activation state.
+    var extension_activated = false;
 
     // Set the initial height for the overlay.
     var $overlay = $('#overlay').css({ height: $(document).height() });
@@ -12,24 +91,118 @@ jQuery(document).ready(function($) {
     // visible (this needs to be done on timeout to give popup time to show).
     //
     // See: http://code.google.com/p/chromium/issues/detail?id=31494
-    setTimeout(function() {
+    //
+    // Listen for a table refresh event and add the class if needed.
+    $(document).bind('table_updated', function(e) {
         if($(document).height() > $(window).height()) {
             $('body').addClass('scrollbars');
         }
-    }, 5);
+    });
+
+    /*
+     * Helper function for creating progress bar element.
+     */
+    function progress_bar(torrent) {
+
+        var $bar = $(document.createElement('div')).addClass('progress_bar');
+        $(document.createElement('div'))
+            .addClass('inner')
+            .css('width', torrent.get_percent())
+            .html($(document.createElement('span')).html(torrent.state + ' ' + torrent.get_percent()))
+            .appendTo($bar);
+
+        return $bar;
+    }
+
+    function action_links(torrent) {
+        return $('<img src="/images/1301783115_control_play.png"> <img src="/images/1301783236_control_pause.png"> <img src="/images/1301783551_bin_closed.png"> <img src="/images/1301783391_cog.png">');
+    }
+
+    function update_table() {
+        console.log('Updating...');
+        // Clear out any existing timers.
+        clearTimeout(refresh_timer);
+        Torrents.update()
+            .success(function() {
+                console.log('Got data');
+                render_table();
+                // Don't need the torrent info now.
+                refresh_timer = setTimeout(update_table, refresh_interval);
+            })
+            .error(function() {
+                // Problem fetching information, perform a status check.
+                // Note: Not setting a timeout, should happen once update_table
+                // gets called when extension check is OK.
+                check_status();
+            });
+    }
+
+    function render_table() {
+        // Fetch new information.
+        var torrents = Torrents.get_all();
+        var $tbody = jQuery('#torrent_table tbody');
+
+        $tbody.html('');
+        for(var i=0; i < torrents.length; i++) {
+            var torrent = torrents[i];
+
+            var $tr = $(document.createElement('tr'))
+                .data({ id: torrent.id }) /* Store torrent id on the tr */
+                .append(
+                // Checkbox.
+                $(document.createElement('td'))
+                    .addClass('table_cell_checkbox')
+                    .html($('<input type="checkbox" name="selected_torrents[]">').val(torrent.id)),
+
+                // Position cell.
+                $(document.createElement('td'))
+                    .addClass('table_cell_position')
+                    .html(torrent.get_position()),
+
+                // name.
+                $(document.createElement('td'))
+                    .addClass('table_cell_name')
+                    .html(torrent.name),
+
+                // Size.
+                $(document.createElement('td'))
+                    .addClass('table_cell_size')
+                    .html(torrent.get_human_size()),
+
+                // Progress bar.
+                $(document.createElement('td'))
+                    .addClass('table_cell_progress')
+                    .html(progress_bar(torrent)),
+
+                // Speed.
+                $(document.createElement('td'))
+                    .addClass('table_cell_speed')
+                    .html(torrent.get_speeds()),
+
+                $(document.createElement('td'))
+                    .addClass('table_cell_eta')
+                    .html(torrent.get_eta()),
+
+                $(document.createElement('td'))
+                    .addClass('table_cell_actions')
+                    .html(action_links(torrent))
+            );
+
+            $tbody.append($tr);
+        }
+        $(document).trigger('table_updated');
+    }
 
     /*
      * Check the status of the extension and do the handling for the popup.
      *
      * This function only displays error messages, it's the job of the
-     * background page to inform us the error has been resolved.
+     * background page to inform us the error has been resolved so we can update
+     * the table.
      */
     function check_status() {
-        // Perform a status check.
         background_page.Background.check_status({ timeout: 1000 }).success(function(response) {
-            if (response === true) {
-                $overlay.fadeOut('fast');
-            } else {
+            if (response === false) {
                 // Most likely still waiting on daemon to start.
                 $('span', $overlay).removeClass().addClass('error').html(
                     chrome.i18n.getMessage('error_daemon_not_running')
@@ -54,9 +227,22 @@ jQuery(document).ready(function($) {
         });
     }
 
+    // This function is called when the background page sends an activated
+    // message, this happens roughly every minute so we only want to call
+    // update_table, or hide any current overlays once, we can let the local
+    // timers in within this script handle table updating.
     function activated() {
-        $overlay.hide();
-        // TODO: Fetch content.
+        if (!extension_activated) {
+            console.log('ACTIVATED');
+            extension_activated = true;
+            $overlay.hide();
+            update_table();
+        }
+    }
+
+    function deactivated() {
+        console.log('deactivate');
+        extension_activated = false;
     }
 
     function auto_login_failed() {
@@ -70,6 +256,8 @@ jQuery(document).ready(function($) {
         function(request, sender, sendResponse) {
             if (request.msg == 'extension_activated') {
                 activated();
+            } else if (request.msg == 'extension_deactivated') {
+                deactivated();
             } else if (request.msg == 'auto_login_failed') {
                 auto_login_failed();
             }
