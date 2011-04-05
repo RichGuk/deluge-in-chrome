@@ -34,7 +34,7 @@ var Torrents = (function($) {
 
     pub.cleanup = function() {
         for(var i=0; i < torrents.length; i++) {
-            delete torrents[i];
+            torrents[i] = null;
         }
         torrents = null;
     };
@@ -80,7 +80,7 @@ jQuery(document).ready(function($) {
     // Get extension background page for use within the code.
     var background_page = chrome.extension.getBackgroundPage();
     // Setup timer information.
-    var refresh_timer = null, refresh_interval = 4000;
+    var refresh_timer = null, refresh_interval = 2000;
     // Store the extension activation state.
     var extension_activated = false;
 
@@ -103,7 +103,6 @@ jQuery(document).ready(function($) {
      * Helper function for creating progress bar element.
      */
     function progress_bar(torrent) {
-
         var $bar = $(document.createElement('div')).addClass('progress_bar');
         $(document.createElement('div'))
             .addClass('inner')
@@ -142,7 +141,7 @@ jQuery(document).ready(function($) {
         var torrents = Torrents.get_all();
         var $tbody = jQuery('#torrent_table tbody');
 
-        $tbody.html('');
+        $tbody.empty();
         for(var i=0; i < torrents.length; i++) {
             var torrent = torrents[i];
 
@@ -265,5 +264,5 @@ jQuery(document).ready(function($) {
     );
 
     // Do initial check.
-    check_status($overlay);
+    check_status();
 });
