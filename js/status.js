@@ -2,7 +2,6 @@
  * Module responsible for fetching, storing and sorting torrent objects.
  */
 var Torrents = (function($) {
-    console.log('creating...');
     var pub = {};
     // Stores all torrent data, using array so it can be sorted.
     var torrents = [];
@@ -118,14 +117,11 @@ jQuery(document).ready(function($) {
     }
 
     function update_table() {
-        console.log('Updating...');
         // Clear out any existing timers.
         clearTimeout(refresh_timer);
         Torrents.update()
             .success(function() {
-                console.log('Got data');
                 render_table();
-                // Don't need the torrent info now.
                 refresh_timer = setTimeout(update_table, refresh_interval);
             })
             .error(function() {
@@ -178,15 +174,18 @@ jQuery(document).ready(function($) {
                     .addClass('table_cell_speed')
                     .html(torrent.get_speeds()),
 
+                // Estimated time.
                 $(document.createElement('td'))
                     .addClass('table_cell_eta')
                     .html(torrent.get_eta()),
 
+                // Action menus.
                 $(document.createElement('td'))
                     .addClass('table_cell_actions')
-                    .html(action_links(torrent))
+                    .html(action_links())
             );
 
+            torrent = null;
             $tbody.append($tr);
         }
         $(document).trigger('table_updated');
@@ -240,7 +239,6 @@ jQuery(document).ready(function($) {
     }
 
     function deactivated() {
-        console.log('deactivate');
         extension_activated = false;
     }
 
