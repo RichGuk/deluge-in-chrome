@@ -101,9 +101,31 @@ table#torrent_table {
     .table_cell_size { text-align: center; }
     #table_header_speed { width: 150px; }
     .table_cell_speed { text-align: center; }
-    #table_header_actions { width: 140px; }
+    #table_header_actions { width: 130px; }
+    .table_cell_actions { text-align: center; }
   table#torrent_table tbody tr:nth-child(even) { background: #F4F4F4; }
   table#torrent_table tbody tr td { padding: 5px 3px; }
+
+.table_cell_actions a {
+  border: 0;
+  cursor: pointer;
+  display: inline-block;
+  height: 16px;
+  margin: 0 1px;
+  width: 16px;
+}
+    .table_cell_actions a.state {
+        background: url(/themes/standard/images/state.png) no-repeat top left;
+    }
+    .table_cell_actions a.state.resume { background-position: 0 -66px; width: 16px; height: 16px; }
+    .table_cell_actions a.state.pause { background-position: 0 0; width: 16px; height: 16px; }
+    .table_cell_actions a.move_up { background: url(/themes/standard/images/up.png) no-repeat left top; }
+    .table_cell_actions a.move_down { background: url(/themes/standard/images/down.png) no-repeat left top; }
+    .table_cell_actions a.more { background: url(/images/icons/16_black.png) no-repeat left top; }
+    .table_cell_actions a.delete { background: url(/themes/standard/images/remove.png) no-repeat left top; }
+    .table_cell_actions a.toggle_managed { background: url(/themes/standard/images/auto_managed.png) no-repeat top left; }
+    .table_cell_actions a.managed { background-position: 0 -66px; }
+    .table_cell_actions a.unmanaged { background-position: 0 0; }
 
 a:hover {color: #000000;}
 .clr { clear: both; }

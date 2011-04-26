@@ -8,6 +8,7 @@ function Torrent(id, data) {
     this.speed_download = data.download_payload_rate;
     this.speed_upload = data.upload_payload_rate;
     this.eta = data.eta;
+    this.auto_managed = data.is_auto_managed;
 }
 
 Torrent.prototype.calc_size = function(size) {

@@ -113,7 +113,26 @@ jQuery(document).ready(function($) {
     }
 
     function action_links(torrent) {
-        return $('<img src="/images/1301783115_control_play.png"> <img src="/images/1301783236_control_pause.png"> <img src="/images/1301783551_bin_closed.png"> <img src="/images/1301783391_cog.png">');
+        // Work out which state class to add based on torrent information.
+        var state = torrent.state == "Paused" ? 'resume' : 'pause';
+        // Do the same with auto managed state.
+        var managed = torrent.auto_managed ? 'managed' : 'unmanaged';
+
+        return $(document.createElement('div'))
+            .addClass('main_actions')
+            .append(
+                // Delete.
+                $(document.createElement('a')).addClass('delete'),
+                // Pause/Resume buttons.
+                $(document.createElement('a')).addClass('state').addClass(state),
+                // Move up button.
+                $(document.createElement('a')).addClass('move_up'),
+                $(document.createElement('a')).addClass('move_down'),
+                // Auto managed options.
+                $(document.createElement('a')).addClass('toggle_managed').addClass(managed),
+                // More options..
+                $(document.createElement('a')).addClass('more')
+            );
     }
 
     function update_table() {
@@ -182,7 +201,7 @@ jQuery(document).ready(function($) {
                 // Action menus.
                 $(document.createElement('td'))
                     .addClass('table_cell_actions')
-                    .html(action_links())
+                    .append(action_links(torrent))
             );
 
             torrent = null;
