@@ -51,7 +51,7 @@ var Background = (function($) {
      * If we have login details perform a login to the Deluge webUI.
      */
     pub.login = function() {
-        return Deluge.api('auth.login', [localStorage.deluge_password]);
+        return Deluge.api('auth.login', [localStorage.delugePassword]);
     };
 
     pub.connect = function() {

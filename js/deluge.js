@@ -2,7 +2,7 @@ var Deluge = (function(Deluge, $) {
     Deluge = Deluge || {};
 
     function endpoint() {
-        return localStorage.deluge_address + '/json';
+        return localStorage.delugeAddress + '/json';
     }
 
     // API Error Text Status.
