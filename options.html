@@ -10,69 +10,75 @@
     <link rel="stylesheet" href="css/master.css" type="text/css" />
     <link rel="stylesheet" href="css/chrome.css" type="text/css" />
     <style type="text/css" media="screen">
+      body { width: 100%; }
       .buttons { margin: 10px 0 0 0; }
       .buttons .left { float: left; }
       .buttons .right { float: right; }
+      #content { width: 790px; margin-left: auto; margin-right: auto;
+                border: 1px solid #CCC; padding: 5px; }
+      #options form { width: 500px; margin-left: auto; margin-right: auto;}
     </style>
   </head>
 
   <body>
-    <div id="header">
-      <div id="logo">
-        <a href="#" title="Go to Deluge WebUI!">
-          <span class="title">Deluge</span>
-          <span class="subtitle">Deluge torrent information in Chrome</span>
-        </a>
-      </div>
-      <div class="clr"></div>
-    </div>
-
-    <div id="options">
-      <div class="chrome-header">
-        <h2>Configuration</h2>
-      </div>
-      <div class="chrome-sub-header">
-        <p>This extension requires an accessible version of Deluge web interface to be running. Please refer to the <a href="http://deluge-torrent.org/" target="_blank">Deluge documentation</a> on how to get this working.</p>
-        <p>In order to connect to the web interface with need to know some details about the web interface. The address used to access the interface (http://address:port) and finally the password used to login.</p>
-      </div>
-
-      <div id="status-message"></div>
-
-      <form class="nice-form" style="width: 500px">
-        <fieldset>
-          <legend>Options</legend>
-          <p>
-            <label>Address:</label>
-            <input type="text" name="address" id="address" style="width: 300px" placeholder="http://" />
-          </p>
-
-          <p>
-            <label>Password:</label>
-            <input type="password" name="password" id="password" />
-          </p>
-
-          <p>
-            <input type="checkbox" name="enable_download_torrent" id="enable_download_torrent" value="1" />
-            <label class="normal" for="enable_download_torrent"> Enable download torrent icon? <span>(experimental)</span></label>
-          </p>
-          
-          <p>
-            <input type="checkbox" name="enable_debug_mode" id="enable_debug_mode" value="0" />
-            <label class="normal" for="enable_debug_mode"> Enable debug mode? </label>
-          </p>
-        </fieldset>
-
-        <div class="buttons">
-          <div class="left">
-            <button type="submit" class="cancel">Cancel</button>
-          </div>
-          <div class="right">
-            <button type="submit" class="save">Save</button>
-            <button type="submit" class="apply">Apply</button>
-          </div>
-          <div class="clr"></div>
+    <div id="content">
+      <div id="header">
+        <div id="logo">
+          <a href="#" title="Go to Deluge WebUI!">
+            <span class="title">Deluge</span>
+            <span class="subtitle">Deluge torrent information in Chrome</span>
+          </a>
         </div>
-      </form>
+        <div class="clr"></div>
+      </div>
+  
+      <div id="options">
+        <div class="chrome-header">
+          <h2>Configuration</h2>
+        </div>
+        <div class="chrome-sub-header">
+          <p>This extension requires an accessible version of Deluge web interface to be running. Please refer to the <a href="http://deluge-torrent.org/" target="_blank">Deluge documentation</a> on how to get this working.</p>
+          <p>In order to connect to the web interface with need to know some details about the web interface. The address used to access the interface (http://address:port) and finally the password used to login.</p>
+        </div>
+  
+        <div id="status-message"></div>
+  
+        <form class="nice-form" style="width: 500px">
+          <fieldset>
+            <legend>Options</legend>
+            <p>
+              <label>Address:</label>
+              <input type="text" name="address" id="address" style="width: 300px" placeholder="http://" />
+            </p>
+  
+            <p>
+              <label>Password:</label>
+              <input type="password" name="password" id="password" />
+            </p>
+  
+            <p>
+              <input type="checkbox" name="enable_download_torrent" id="enable_download_torrent" value="1" />
+              <label class="normal" for="enable_download_torrent"> Enable download torrent icon? <span>(experimental)</span></label>
+            </p>
+            
+            <p>
+              <input type="checkbox" name="enable_debug_mode" id="enable_debug_mode" value="0" />
+              <label class="normal" for="enable_debug_mode"> Enable debug mode? </label>
+            </p>
+          </fieldset>
+  
+          <div class="buttons">
+            <div class="left">
+              <button type="submit" class="cancel">Cancel</button>
+            </div>
+            <div class="right">
+              <button type="submit" class="save">Save</button>
+              <button type="submit" class="apply">Apply</button>
+            </div>
+            <div class="clr"></div>
+          </div>
+        </form>
+      </div>
     </div>
   </body>
 </html>
