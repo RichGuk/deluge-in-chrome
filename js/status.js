@@ -19,11 +19,11 @@ var Torrents = (function($) {
         return 0;
     }
 
-    pub.get_all = function() {
+    pub.getAll = function() {
         return torrents;
     };
 
-    pub.get_by_id = function(val) {
+    pub.getById = function(val) {
         for (var i = 0; i < torrents.length; i++) {
             if (torrents[i].id == val) {
                 return torrents[i];
@@ -57,7 +57,7 @@ var Torrents = (function($) {
 
                 // Sort the torrents.
                 torrents.sort(sortCallback);
-                if (localStorage.sort_method == 'desc') {
+                if (localStorage.sortMethod == 'desc') {
                     torrents.reverse();
                 }
             });
@@ -101,7 +101,7 @@ jQuery(document).ready(function($) {
     /*
      * Helper function for creating progress bar element.
      */
-    function progress_bar(torrent) {
+    function progressBar(torrent) {
         var $bar = $(document.createElement('div')).addClass('progress_bar');
         $(document.createElement('div'))
             .addClass('inner')
@@ -112,7 +112,7 @@ jQuery(document).ready(function($) {
         return $bar;
     }
 
-    function action_links(torrent) {
+    function actionLinks(torrent) {
         // Work out which state class to add based on torrent information.
         var state = torrent.state == "Paused" ? 'resume' : 'pause';
         // Do the same with auto managed state.
@@ -135,25 +135,25 @@ jQuery(document).ready(function($) {
             );
     }
 
-    function update_table() {
+    function updateTable() {
         // Clear out any existing timers.
         clearTimeout(refresh_timer);
         Torrents.update()
             .success(function() {
-                render_table();
-                refresh_timer = setTimeout(update_table, refresh_interval);
+                renderTable();
+                refresh_timer = setTimeout(updateTable, refresh_interval);
             })
             .error(function() {
                 // Problem fetching information, perform a status check.
-                // Note: Not setting a timeout, should happen once update_table
+                // Note: Not setting a timeout, should happen once updateTable
                 // gets called when extension check is OK.
-                check_status();
+                checkStatus();
             });
     }
 
-    function render_table() {
+    function renderTable() {
         // Fetch new information.
-        var torrents = Torrents.get_all();
+        var torrents = Torrents.getAll();
         var $tbody = jQuery('#torrent_table tbody');
 
         $tbody.empty();
@@ -186,7 +186,7 @@ jQuery(document).ready(function($) {
                 // Progress bar.
                 $(document.createElement('td'))
                     .addClass('table_cell_progress')
-                    .html(progress_bar(torrent)),
+                    .html(progressBar(torrent)),
 
                 // Speed.
                 $(document.createElement('td'))
@@ -201,7 +201,7 @@ jQuery(document).ready(function($) {
                 // Action menus.
                 $(document.createElement('td'))
                     .addClass('table_cell_actions')
-                    .append(action_links(torrent))
+                    .append(actionLinks(torrent))
             );
 
             torrent = null;
@@ -217,7 +217,7 @@ jQuery(document).ready(function($) {
      * background page to inform us the error has been resolved so we can update
      * the table.
      */
-    function check_status() {
+    function checkStatus() {
         background_page.Background.check_status({ timeout: 1000 }).success(function(response) {
             if (response === false) {
                 // Most likely still waiting on daemon to start.
@@ -235,7 +235,7 @@ jQuery(document).ready(function($) {
              *
              * We will instead receive errors from the global event for auto
              * login failure to display the message to the user - see
-             * auto_login_failed and Chrome extension addListner.
+             * autoLoginFailed and Chrome extension addListner.
              */
             if (err.code !== Deluge.API_AUTH_CODE) {
                 $('span', $overlay).removeClass().addClass('error').html(message);
@@ -246,14 +246,14 @@ jQuery(document).ready(function($) {
 
     // This function is called when the background page sends an activated
     // message, this happens roughly every minute so we only want to call
-    // update_table, or hide any current overlays once, we can let the local
+    // updateTable, or hide any current overlays once, we can let the local
     // timers in within this script handle table updating.
     function activated() {
         if (!extension_activated) {
             console.log('ACTIVATED');
             extension_activated = true;
             $overlay.hide();
-            update_table();
+            updateTable();
         }
     }
 
@@ -261,7 +261,7 @@ jQuery(document).ready(function($) {
         extension_activated = false;
     }
 
-    function auto_login_failed() {
+    function autoLoginFailed() {
         var message = chrome.i18n.getMessage('error_unauthenticated');
         $('span', $overlay).addClass('error').html(message);
         $overlay.show();
@@ -274,12 +274,12 @@ jQuery(document).ready(function($) {
                 activated();
             } else if (request.msg == 'extension_deactivated') {
                 deactivated();
-            } else if (request.msg == 'auto_login_failed') {
-                auto_login_failed();
+            } else if (request.msg == 'autoLoginFailed') {
+                autoLoginFailed();
             }
         }
     );
 
     // Do initial check.
-    check_status();
+    checkStatus();
 });
