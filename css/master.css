@@ -4,6 +4,8 @@ body {
   font-size: 75%;
   padding: 0 0;
   margin: 0px 2px 8px 2px;
+  overflow-x: hidden;
+  width: 790px;
 }
 
 a {
@@ -21,7 +23,12 @@ span.small {
   font-size: 10px;
 }
 
-#torrent-status, #disconnected { width: 790px; }
+#torrent-status, #disconnected {
+  margin: 0 auto;
+  width: 765px;
+}
+
+#header { width:760px; }
 
 #logo { float: left; }
 
