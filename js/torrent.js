@@ -5,13 +5,13 @@ function Torrent(id, data) {
     this.state = data.state;
     this.size = data.total_size;
     this.position = data.queue;
-    this.speed_download = data.download_payload_rate;
-    this.speed_upload = data.upload_payload_rate;
+    this.speedDownload = data.download_payload_rate;
+    this.speedUpload = data.upload_payload_rate;
     this.eta = data.eta;
-    this.auto_managed = data.is_auto_managed;
+    this.autoManaged = data.is_auto_managed;
 }
 
-Torrent.prototype.calc_size = function(size) {
+Torrent.prototype.calcSize = function(size) {
     bytes = size / 1024.0;
     if (bytes < 1024) {
         return bytes.toFixed(1) + ' KiB';
@@ -25,34 +25,34 @@ Torrent.prototype.calc_size = function(size) {
     return (bytes / 1024).toFixed(1) + ' GiB';
 };
 
-Torrent.prototype.get_human_size = function() {
-    return this.calc_size(this.size);
+Torrent.prototype.getHumanSize = function() {
+    return this.calcSize(this.size);
 };
 
-Torrent.prototype.get_position = function() {
+Torrent.prototype.getPosition = function() {
     if (this.position < 0) {
         return '';
     }
     return this.position;
 };
 
-Torrent.prototype.get_percent = function() {
+Torrent.prototype.getPercent = function() {
     return (Math.round(this.progress * Math.pow(10, 2)) / Math.pow(10, 2)) + '%';
 };
 
-Torrent.prototype.get_download = function() {
-    return this.calc_size(this.speed_download) + '/s';
+Torrent.prototype.getDownload = function() {
+    return this.calcSize(this.speedDownload) + '/s';
 };
 
-Torrent.prototype.get_upload = function() {
-    return this.calc_size(this.speed_upload) + '/s';
+Torrent.prototype.getUpload = function() {
+    return this.calcSize(this.speedUpload) + '/s';
 };
 
-Torrent.prototype.get_speeds = function() {
-    return this.get_download() + ' - ' + this.get_upload();
+Torrent.prototype.getSpeeds = function() {
+    return this.getDownload() + ' - ' + this.get_upload();
 };
 
-Torrent.prototype.get_eta = function() {
+Torrent.prototype.getEta = function() {
     var secs = 0, mins = 0, hours = 0, days = 0;
     var time = this.eta;
 
