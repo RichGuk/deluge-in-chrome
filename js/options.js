@@ -61,10 +61,10 @@ $(function() {
         localStorage.debugMode = $debugModeChecked;  
 
         var background = chrome.extension.getBackgroundPage();
-        background.Background.check_status();
+        background.Background.checkStatus();
 
         if ($debugModeChecked) {
-            console.log('deluge: options saved!');
+            console.log('Deluge: options saved!');
         }
         
         if(message.length > 0) {
