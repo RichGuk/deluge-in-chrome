@@ -29,6 +29,7 @@ var Torrents = (function($) {
                 return torrents[i];
             }
         }
+        return false;
     };
 
     pub.cleanup = function() {
@@ -77,14 +78,16 @@ var Torrents = (function($) {
  */
 jQuery(document).ready(function($) {
     // Get extension background page for use within the code.
-    var background_page = chrome.extension.getBackgroundPage();
+    var backgroundPage = chrome.extension.getBackgroundPage();
     // Setup timer information.
-    var refresh_timer = null, refresh_interval = 2000;
+    var refreshTimer = null;
+    const REFRESH_INTERVAL = 2000;
     // Store the extension activation state.
-    var extension_activated = false;
+    var extensionActivated = false;
 
     // Set the initial height for the overlay.
     var $overlay = $('#overlay').css({ height: $(document).height() });
+    
     // I can't get the popup to play nicely when there is a scroll bar and then
     // when there isn't - so going to adjust the width if a scroll bar is
     // visible (this needs to be done on timeout to give popup time to show).
@@ -116,7 +119,7 @@ jQuery(document).ready(function($) {
         // Work out which state class to add based on torrent information.
         var state = torrent.state == "Paused" ? 'resume' : 'pause';
         // Do the same with auto managed state.
-        var managed = torrent.auto_managed ? 'managed' : 'unmanaged';
+        var managed = torrent.autoManaged ? 'managed' : 'unmanaged';
 
         return $(document.createElement('div'))
             .addClass('main_actions')
@@ -137,11 +140,11 @@ jQuery(document).ready(function($) {
 
     function updateTable() {
         // Clear out any existing timers.
-        clearTimeout(refresh_timer);
+        clearTimeout(refreshTimer);
         Torrents.update()
             .success(function() {
                 renderTable();
-                refresh_timer = setTimeout(updateTable, refresh_interval);
+                refreshTimer = setTimeout(updateTable, REFRESH_INTERVAL);
             })
             .error(function() {
                 // Problem fetching information, perform a status check.
@@ -218,7 +221,7 @@ jQuery(document).ready(function($) {
      * the table.
      */
     function checkStatus() {
-        background_page.Background.check_status({ timeout: 1000 }).success(function(response) {
+        backgroundPage.Background.checkStatus({ timeout: 1000 }).success(function(response) {
             if (response === false) {
                 // Most likely still waiting on daemon to start.
                 $('span', $overlay).removeClass().addClass('error').html(
@@ -249,16 +252,18 @@ jQuery(document).ready(function($) {
     // updateTable, or hide any current overlays once, we can let the local
     // timers in within this script handle table updating.
     function activated() {
-        if (!extension_activated) {
-            console.log('ACTIVATED');
-            extension_activated = true;
+        if (!extensionActivated) {
+            if (Global.getDebugMode()) {
+                console.log('Deluge: ACTIVATED');
+            }
+            extensionActivated = true;
             $overlay.hide();
             updateTable();
         }
     }
 
     function deactivated() {
-        extension_activated = false;
+        extensionActivated = false;
     }
 
     function autoLoginFailed() {
@@ -274,7 +279,7 @@ jQuery(document).ready(function($) {
                 activated();
             } else if (request.msg == 'extension_deactivated') {
                 deactivated();
-            } else if (request.msg == 'autoLoginFailed') {
+            } else if (request.msg == 'auto_login_failed') {
                 autoLoginFailed();
             }
         }

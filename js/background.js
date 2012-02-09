@@ -2,28 +2,31 @@ var Background = (function($) {
     // Store all public methods and attributes.
     var pub = {};
 
-    var status_timer = null;
+    var statusTimer = null;
 
     /*
      * Intervals used for status checking.
      * If an error occurs when checking the status then increase how often
      * things are checked.
      */
-    var status_check_error_interval = 120000;
-    var status_check_interval = 60000;
+    const STATUS_CHECK_ERROR_INTERVAL = 120000;
+    const STATUS_CHECK_INTERVAL = 60000;
 
     /*
      * Start the daemon for a given host id.
      */
-    function start_daemon(host_id) {
+    function startDaemon(hostId) {
         // Attempt start the Daemon if not already.
         var deferred = $.Deferred(function(d) {
             // Find the current status of the daemon.
-            Deluge.api('web.get_host_status', [host_id])
+            Deluge.api('web.get_host_status', [hostId])
             .success(function(response) {
                 if (response && response[3] == 'Offline') {
                     Deluge.api('web.start_daemon', [response[2]])
                         .success(function(response) {
+                            if (Global.getDebugMode()) {
+                                console.log('Daemon started');
+                            }
                             // Give the Daemon a few seconds to start.
                             setTimeout(function() { d.resolve(); }, 2000);
                         });
@@ -32,6 +35,9 @@ var Background = (function($) {
                 }
             })
             .error(function() {
+                if (Global.getDebugMode()) {
+                    console.log('Deluge: Error getting host status');
+                }
                 d.reject();
             });
         });
@@ -42,7 +48,7 @@ var Background = (function($) {
     /*
      * Called when auto login failed - normally incorrect login details.
      */
-    function auto_login_failed() {
+    function autoLoginFailed() {
         // Inform anyone who's listening.
         chrome.extension.sendRequest({ msg: 'auto_login_failed' });
     }
@@ -62,10 +68,10 @@ var Background = (function($) {
                 .success(function(response) {
                     // Only one host found.
                     if (response.length == 1) {
-                        var host_id = response[0][0];
+                        var hostId = response[0][0];
                         // Check the daemon is running and then try connecting.
-                        start_daemon(host_id).done(function() {
-                            Deluge.api('web.connect', [host_id])
+                        startDaemon(hostId).done(function() {
+                            Deluge.api('web.connect', [hostId])
                                 .success(function() { d.resolve(); })
                                 .error(function() { d.reject(); });
                         });
@@ -87,29 +93,33 @@ var Background = (function($) {
      *
      * @return API promise - can attach additional success/error callbacks.
      * */
-    pub.check_status = function(options) {
+    pub.checkStatus = function(options) {
+        if (Global.getDebugMode()) {
+            console.log('Deluge: Checking status');
+        }
+        
         var that = this;
 
-        function check_status() {
-            that.check_status();
+        function checkStatus() {
+            that.checkStatus();
         }
 
         // Clear any existing timers.
-        clearTimeout(status_timer);
+        clearTimeout(statusTimer);
 
         var api = Deluge.api('web.connected', [], options)
             .success(function(response) {
                 // Connected: activate the extension.
                 if (response === true) {
                     that.activate();
-                    status_timer = setTimeout(check_status, status_check_interval);
+                    statusTimer = setTimeout(checkStatus, STATUS_CHECK_INTERVAL);
                 } else {
                     // Authenticated but not connected - attempt to connect to
                     // daemon.
                     that.connect().done(function() {
                         that.activate();
                         // Create timer.
-                        status_timer = setTimeout(check_status, status_check_interval);
+                        statusTimer = setTimeout(checkStatus, STATUS_CHECK_INTERVAL);
                     });
                 }
             })
@@ -122,30 +132,41 @@ var Background = (function($) {
                             .success(function(res) {
                                 // If successful check status again now.
                                 if (res === true) {
-                                    that.check_status();
+                                    that.checkStatus();
                                 } else {
                                     // Wrong login - not much we can do, try
                                     // checking in a bit.
-                                    console.log('Deluge: Incorrect login details.');
-                                    status_timer = setTimeout(check_status, status_check_error_interval);
+                                    if (Global.getDebugMode()) {
+                                        console.log('Deluge: Incorrect login details.');
+                                    }
+                                    statusTimer = setTimeout(check_status, STATUS_CHECK_ERROR_INTERVAL);
                                     that.deactivate();
-                                    auto_login_failed();
+                                    autoLoginFailed();
                                 }
                             })
                             .error(function(jqXHR, text, err) {
+                                if (Global.getDebugMode()) {
+                                    console.log('Deluge: Error logging in');
+                                }
                                 that.deactivate();
                             });
                     } else {
+                        if (Global.getDebugMode()) {
+                            console.log('Deluge: API error occured');
+                        }
                         // Unknown API error, deactivate the extension.
                         that.deactivate();
                     }
                     // Setup interval for a repeat check.
-                    status_timer = setTimeout(check_status, status_check_interval);
+                    statusTimer = setTimeout(checkStatus, STATUS_CHECK_INTERVAL);
                 } else {
                     // Unknown error (resulting from 500/400 status codes
                     // normally); best thing to do is check again, but with a
                     // longer interval.
-                    status_timer = setTimeout(check_status, status_check_error_interval);
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Unknown error occured');
+                    }
+                    statusTimer = setTimeout(checkStatus, STATUS_CHECK_ERROR_INTERVAL);
                     that.deactivate();
                 }
             });
@@ -160,6 +181,9 @@ var Background = (function($) {
      * successfully.
      */
     pub.activate = function() {
+        if (Global.getDebugMode()) {
+            console.log('Deluge: Extension activated');
+        }
         chrome.browserAction.setIcon({path: 'images/icons/deluge_active.png'});
         chrome.browserAction.setTitle({
             title: chrome.i18n.getMessage('browser_title')
@@ -173,6 +197,9 @@ var Background = (function($) {
      * This is normally called after doing a status check, which returned false.
      */
     pub.deactivate = function() {
+        if (Global.getDebugMode()) {
+            console.log('Deluge: Extension deactivated');
+        }
         chrome.browserAction.setIcon({path: 'images/icons/deluge.png'});
         chrome.browserAction.setTitle({
             title: chrome.i18n.getMessage('browser_title_disabled')
@@ -186,5 +213,5 @@ var Background = (function($) {
 
 // Run init stuff for the plugin.
 jQuery(document).ready(function($) {
-    Background.check_status();
+    Background.checkStatus();
 });
