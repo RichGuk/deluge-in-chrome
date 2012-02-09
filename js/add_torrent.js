@@ -18,10 +18,6 @@ function showDownloadIcon() {
         return false;
     });
 
-    if (Global.getDebugMode()) {
-        console.log('Deluge: ' + links);
-    }
-
     // For all the found links, add the little download icon.
     var icon = chrome.extension.getURL('images/icons/16.png');
     var iconAdded = chrome.extension.getURL('images/icons/16_green.png');
@@ -43,10 +39,6 @@ function showDownloadIcon() {
         function(response) {
           if(response.msg == 'success') {
             $('img', link).attr('src', iconAdded);
-          } else {
-            if (Global.getDebugMode()) {
-              console.log('Deluge: failed to download torrent file.');
-            }
           }
         });
         return false;
@@ -54,10 +46,6 @@ function showDownloadIcon() {
 }
 
 chrome.extension.sendRequest({msg: 'enable_download_icon'}, function(response) {
-    if (Global.getDebugMode()) {
-        console.log('Deluge: ' + response);
-    }
-    
     if(response == 'true') {
         showDownloadIcon();
     }
