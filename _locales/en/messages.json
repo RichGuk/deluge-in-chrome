@@ -4,7 +4,7 @@
         "description": "Title shown for browser icon when enabled."
     },
     "browser_title_disabled": {
-        "message": "Could not connect to Deluge (LOLWUT)!",
+        "message": "Could not connect to Deluge!",
         "description": "Title shown for icon when extension disabled (i.e. can't connect to deluge)."
     },
 
