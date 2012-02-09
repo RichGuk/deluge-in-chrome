@@ -15,7 +15,6 @@ function showDownloadIcon() {
         if(this.href.search(/\/(download|get)\//) > 0 || this.href.search(/\.torrent$/) > 0) {
             links.push(this);
         }
-        return false;
     });
 
     // For all the found links, add the little download icon.
@@ -25,7 +24,7 @@ function showDownloadIcon() {
     for(var i = 0; i < links.length; i++) {
         // Check we don't already have the icon.
         if($(links[i]).next('.deluge-icon').length > 0) {
-          continue;
+            continue;
         }
         $(links[i]).after('<a class="deluge-icon" title="Download in Deluge!" href="' + links[i].href + '"><img src="' + icon + '" alt="Download in Deluge" style="border:0;" /></a>');
     }
@@ -37,9 +36,9 @@ function showDownloadIcon() {
     
         chrome.extension.sendRequest({ msg: 'add_torrent_from_url', url: this.href},
         function(response) {
-          if(response.msg == 'success') {
-            $('img', link).attr('src', iconAdded);
-          }
+            if(response.msg == 'success') {
+              $('img', link).attr('src', iconAdded);
+            }
         });
         return false;
     });
