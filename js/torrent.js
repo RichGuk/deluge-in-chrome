@@ -49,7 +49,7 @@ Torrent.prototype.getUpload = function() {
 };
 
 Torrent.prototype.getSpeeds = function() {
-    return this.getDownload() + ' - ' + this.get_upload();
+    return this.getDownload() + ' - ' + this.getUpload();
 };
 
 Torrent.prototype.getEta = function() {

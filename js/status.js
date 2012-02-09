@@ -61,6 +61,9 @@ var Torrents = (function($) {
                 if (localStorage.sortMethod == 'desc') {
                     torrents.reverse();
                 }
+                if (Global.getDebugMode()) {
+                    console.log(torrents);
+                }
             });
 
         return api;
@@ -108,8 +111,8 @@ jQuery(document).ready(function($) {
         var $bar = $(document.createElement('div')).addClass('progress_bar');
         $(document.createElement('div'))
             .addClass('inner')
-            .css('width', torrent.get_percent())
-            .html($(document.createElement('span')).html(torrent.state + ' ' + torrent.get_percent()))
+            .css('width', torrent.getPercent())
+            .html($(document.createElement('span')).html(torrent.state + ' ' + torrent.getPercent()))
             .appendTo($bar);
 
         return $bar;
@@ -174,7 +177,7 @@ jQuery(document).ready(function($) {
                 // Position cell.
                 $(document.createElement('td'))
                     .addClass('table_cell_position')
-                    .html(torrent.get_position()),
+                    .html(torrent.getPosition()),
 
                 // name.
                 $(document.createElement('td'))
@@ -184,7 +187,7 @@ jQuery(document).ready(function($) {
                 // Size.
                 $(document.createElement('td'))
                     .addClass('table_cell_size')
-                    .html(torrent.get_human_size()),
+                    .html(torrent.getHumanSize()),
 
                 // Progress bar.
                 $(document.createElement('td'))
@@ -194,12 +197,12 @@ jQuery(document).ready(function($) {
                 // Speed.
                 $(document.createElement('td'))
                     .addClass('table_cell_speed')
-                    .html(torrent.get_speeds()),
+                    .html(torrent.getSpeeds()),
 
                 // Estimated time.
                 $(document.createElement('td'))
                     .addClass('table_cell_eta')
-                    .html(torrent.get_eta()),
+                    .html(torrent.getEta()),
 
                 // Action menus.
                 $(document.createElement('td'))
@@ -275,6 +278,9 @@ jQuery(document).ready(function($) {
     // Setup listeners for closing message overlays coming from background.
     chrome.extension.onRequest.addListener(
         function(request, sender, sendResponse) {
+            if (Global.getDebugMode()) {
+                console.log(request.msg);
+            }
             if (request.msg == 'extension_activated') {
                 activated();
             } else if (request.msg == 'extension_deactivated') {
