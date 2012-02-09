@@ -215,6 +215,89 @@ jQuery(document).ready(function($) {
         }
         $(document).trigger('table_updated');
     }
+    
+    (function() {
+        
+        function getRowData(element) {
+            var $parent = $(element).parents('tr');
+            var torrentId = $parent.data('id');
+            var torrent = Torrents.getById(torrentId);
+            
+            return {'torrentId': torrentId, 'torrent': torrent};
+        }
+      
+        $('.main_actions .toggle_managed').live('click', function() {
+            var rowData = getRowData(this);
+            
+            var autoManaged = !rowData.torrent.autoManaged;
+            
+            Deluge.api('core.set_torrent_auto_managed', [rowData.torrentId, autoManaged])
+                .success(function() {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Auto managed - ' + autoManaged);
+                    }
+                    updateTable();
+                })
+                .error(function() {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Failed to toggle auto managed');
+                    }
+                });
+        });
+        
+        $('.main_actions .state').live('click', function() {
+            var rowData = getRowData(this);
+            
+            var _method = rowData.torrent.state == 'Paused' ? 'core.resume_torrent' : 'core.pause_torrent';
+                        
+            Deluge.api(_method, [[rowData.torrentId]])
+                .success(function() {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Updated state');
+                    }
+                    updateTable();
+                })
+                .error(function() {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Failed to update state');
+                    }
+                });
+        });
+        
+        $('.main_actions .move_up').live('click', function() {
+            var rowData = getRowData(this);
+                                 
+            Deluge.api('core.queue_up', [[rowData.torrentId]])
+                .success(function() {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Moved torrent up');
+                    }
+                    updateTable();
+                })
+                .error(function() {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Failed to move torrent up');
+                    }
+                });
+        });
+        
+        $('.main_actions .move_down').live('click', function() {
+            var rowData = getRowData(this);
+                                 
+            Deluge.api('core.queue_down', [[rowData.torrentId]])
+                .success(function() {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Moved torrent down');
+                    }
+                    updateTable();
+                })
+                .error(function() {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Failed to move torrent down');
+                    }
+                });
+        });
+    })();
 
     /*
      * Check the status of the extension and do the handling for the popup.
