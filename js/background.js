@@ -307,6 +307,40 @@ jQuery(document).ready(function($) {
     Background.checkStatus();
 });
 
+(function() {
+    function addTorrent(OnClickData) {
+        var torrentUrl = OnClickData.linkUrl;
+        if(torrentUrl.search(/\/(download|get)\//) > 0 || torrentUrl.search(/\.torrent$/) > 0) {
+            Background.addTorrentFromUrl({url: torrentUrl}, [], function(response) {
+                if(response.msg == 'success') {
+                    if (Global.getDebugMode) {
+                        console.log('Deluge: Torrent added');
+                    }
+                } else {
+                    if (Global.getDebugMode) {
+                        console.log('Deluge: Torrent could not be added');
+                    }
+                }
+            });
+        } else {
+            if (Global.getDebugMode()) {
+                console.log('Deluge: Link not a torrent!');
+            }
+        }
+        
+        return false;
+    }
+        
+    //for some reason the context menu is always added regardless of the if
+    if (localStorage.contextMenu) {
+        chrome.contextMenus.create({
+            "title": "Add to Deluge",
+            "contexts": ["link"],
+            "onclick" : addTorrent
+        });
+    }
+})();
+
 /*
 * =====================================================================
 * Event bindings.

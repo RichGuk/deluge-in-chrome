@@ -3,6 +3,7 @@ $(function() {
     var $password = $('#password');
     var $delugeDownloadIcon = $('#enable_download_torrent');
     var $debugMode = $('#enable_debug_mode');
+    var $contextMenu = $('#enable_context_menu');
 
     function restoreOptions() {
         $address.val(localStorage.delugeAddress);
@@ -12,6 +13,12 @@ $(function() {
             $delugeDownloadIcon.attr('checked', 'checked');
         } else {
             $delugeDownloadIcon.removeAttr('checked');
+        }
+    
+        if (localStorage.contextMenu == 'true') {
+            $contextMenu.attr('checked', 'checked');
+        } else {
+            $contextMenu.removeAttr('checked');
         }
   
         if (localStorage.debugMode == 'true') {
@@ -27,6 +34,7 @@ $(function() {
         var passwordVal = $password.val();
         var $downloadLinkChecked = $delugeDownloadIcon.is(':checked');
         var $debugModeChecked = $debugMode.is(':checked');
+        var $contextMenuChecked = $contextMenu.is(':checked');
 
         if (addressVal) {
             if (localStorage.delugeAddress != addressVal) {
@@ -49,7 +57,16 @@ $(function() {
         } else if (String($downloadLinkChecked) != downloadIcon) {
             message.push('Download torrent icon disabled!');
         }
-        localStorage.delugeDownloadIcon = $downloadLinkChecked;   
+        localStorage.delugeDownloadIcon = $downloadLinkChecked;
+        
+        var contextMenu = localStorage.contextMenu;
+        if ($contextMenuChecked
+            && String($contextMenuChecked) != contextMenu) {
+            message.push('Context Menu enabled!');
+        } else if (String($contextMenuChecked) != contextMenu) {
+            message.push('Context Menu disabled!');
+        }
+        localStorage.contextMenu = $contextMenuChecked; 
 
         var debugMode = localStorage.debugMode;
         if ($debugModeChecked

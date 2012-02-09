@@ -22,7 +22,7 @@
     }
   ],
   "permissions": [
-     "tabs", "http://*/*", "https://*/*"
+     "tabs", "http://*/*", "https://*/*", "contextMenus"
   ],
 
   "version": "1.0"
