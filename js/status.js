@@ -156,6 +156,26 @@ jQuery(document).ready(function($) {
                 checkStatus();
             });
     }
+    
+    /**
+     * Pause the table refresh.
+     */
+    function pauseTableRefresh() {
+        if (refreshTimer) {
+            clearInterval(refreshTimer);
+        }
+    }
+    
+     /**
+    * Resume the table refresh.
+    */
+    function resumeTableRefresh() {
+        if (refreshTimer) {
+          clearInterval(refreshTimer);
+          refreshTimer = null;
+        }
+        refreshTimer = setInterval('updateTable()', REFRESH_INTERVAL);
+    }
 
     function renderTable() {
         // Fetch new information.
@@ -295,6 +315,59 @@ jQuery(document).ready(function($) {
                     if (Global.getDebugMode()) {
                         console.log('Deluge: Failed to move torrent down');
                     }
+                });
+        });
+        
+        $('.main_actions .delete').live('click', function() {
+            pauseTableRefresh();
+                                             
+            var parentTd = $(this).parents('td');
+            var newElm = $('<div>');
+            newElm.addClass('delete-options');
+            parentTd.append(newElm);
+            newElm.animate({width: '100px'}, 'fast', function() {
+                var tmp = $(this);
+                tmp.append('<a href="#cancel" title="Cancel" rel="cancel"><img src="images/cancel.png" alt="C" /></a>');
+                tmp.append('<a href="#delete-data" title="Delete torrent AND data" rel="data"><img src="images/trash.png" alt="TD" /></a>');
+                tmp.append('<a href="#delete-torrent" title="Just delete torrent file" rel="torrent"><img src="images/file.png" alt="T" /></a>');
+            });
+        });
+        
+        $('.delete-options a').live('click', function() {
+            var rowData = getRowData(this);
+            
+            var action = $(this).attr('rel') || 'cancel';
+            // If canceling remove overlay and resume refresh now and return.
+            if(action == 'cancel') {
+                $('.delete-options').fadeOut('fast', function() {
+                  // Force an update.
+                  resumeTableRefresh();
+                  updateTable();
+                });
+                return false;
+            }
+          
+            function removeButtons() {
+                // Remove buttons, resume refresh.
+                $('.delete-options').fadeOut('fast', function() {
+                    resumeTableRefresh();
+                    updateTable();
+                });
+            }
+          
+            var delData = (action == 'data') ? true : false;
+            Deluge.api('core.remove_torrent', [rowData.torrentId, delData])
+                .success(function() {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Removed torrent');
+                    }
+                    removeButtons();
+                })
+                .error(function() {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Failed to remove torrent');
+                    }
+                    removeButtons();
                 });
         });
     })();
