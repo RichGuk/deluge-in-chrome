@@ -207,6 +207,97 @@ var Background = (function($) {
         // Send deactivation to anything listening.
         chrome.extension.sendRequest({ msg: 'extension_deactivated' });
     };
+    
+    /**
+    * Add a torrent to Deluge using a URL. This method is meant to be called
+    * as part of Chrome extensions messaging system.
+    *
+    * @see chrome.extension.sendRequest && chrome.extension.onRequest
+    */
+    pub.addTorrentFromUrl = function(request, sender, sendResponse) {
+        /**
+         * Fetches the configuration values needed to add the torrent before
+         * adding the torrent to Deluge.
+         *
+         * @param {String} tmpTorrent The temp path to the downloaded torrent file (used by deluge to find the torrent).
+         */
+        function addTorrent(tmpTorrent) {
+            /**
+             * Add the torrent file into Deluge with the correct options.
+             *
+             * @param {Object} options The options for the torrent (download_path, max_connections, etc...).
+             */
+            function addToDeluge(options) {
+                Deluge.api('web.add_torrents', [[{'path': tmpTorrent, 'options': options}]])
+                    .success(function(obj) {
+                        if(obj) {
+                            if (Global.getDebugMode()) {
+                                console.log('deluge: added torrent to deluge.');
+                            }
+                            sendResponse({msg: 'success', result: obj, error: null});
+                            return;
+                        }
+                        if (Global.getDebugMode()) {
+                            console.log('deluge: unable to add torrent to deluge.');
+                        }
+                        sendResponse({msg: 'error', result: null, error: 'unable to add torrent to deluge'});
+                    })
+                    .error(function(req, status, err) {
+                        if (Global.getDebugMode()) {
+                            console.log('deluge: unable to add torrent to deluge.');
+                        }
+                        sendResponse({msg: 'error', result: null, error: 'unable to add torrent to deluge'});
+                    });
+            }
+   
+            // Need to get config values to add with the torrent first.
+            Deluge.api('core.get_config_values', [['add_paused', 'compact_allocation', 'download_location',
+                'max_connections_per_torrent', 'max_download_speed_per_torrent',
+                'max_upload_speed_per_torrent', 'max_upload_slots_per_torrent',
+                'prioritize_first_last_pieces']])
+                .success(function(obj) {
+                    if(obj) {
+                        if (Global.getDebugMode()) {
+                            console.log('deluge: got options!');
+                        }
+                        addToDeluge(obj);
+                        return;
+                    }
+                    if (Global.getDebugMode()) {
+                        console.log('deluge: unable to fetch options.');
+                    }
+                    sendResponse({msg: 'error', result: null, error: 'unable to fetch options.'});
+                })
+                .error(function(req, status, err) {
+                    if (Global.getDebugMode()) {
+                        console.log('deluge: unable to fetch options.');
+                    }
+                    sendResponse({msg: 'error', result: null, error: 'unable to fetch options.'});
+                });
+        }
+
+        // First we need to download the torrent file to a temp location in Deluge.
+        Deluge.api('web.download_torrent_from_url', [request.url, ''])
+            .success(function(obj) {
+                if(obj) {
+                    if (Global.getDebugMode()) {
+                        console.log('deluge: downloaded torrent.');
+                    }
+                    addTorrent(obj);
+                    return;
+                }
+                if (Global.getDebugMode()) {
+                    console.log('deluge: failed to download torrent from URL, no obj or result.');
+                }
+                sendResponse({msg: 'error', result: null, error: 'failed to download torrent from URL.'});
+            })
+            .error(function(req, status, err) {
+                if (Global.getDebugMode()) {
+                    console.log('deluge: failed to download torrent from URL.');
+                }
+                sendResponse({msg: 'error', result: null, error: 'failed to download torrent from URL.'});
+            });
+    }
 
     return pub;
 }(jQuery));
@@ -214,4 +305,24 @@ var Background = (function($) {
 // Run init stuff for the plugin.
 jQuery(document).ready(function($) {
     Background.checkStatus();
+});
+
+/*
+* =====================================================================
+* Event bindings.
+* =====================================================================
+*/
+
+// Any requests send via chrome ext messaging system.
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+
+    if(request.msg == 'add_torrent_from_url') {
+        Background.addTorrentFromUrl(request, sender, sendResponse);
+        return;
+    } else if(request.msg == 'enable_download_icon') {
+        sendResponse(localStorage.delugeDownloadIcon);
+    }
+  
+    // We need to send a reponse, even if it's empty.
+    sendResponse({msg: 'error', result: null, error: 'nothing called!'});
 });
