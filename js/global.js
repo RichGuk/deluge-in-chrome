@@ -3,7 +3,7 @@ var Global = (function() {
     
     pub.getDebugMode = function() {
         return localStorage.debugMode || false;
-    }
+    };
     
     return pub;
 })();
