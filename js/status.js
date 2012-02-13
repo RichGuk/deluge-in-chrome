@@ -112,7 +112,10 @@ jQuery(document).ready(function($) {
         $(document.createElement('div'))
             .addClass('inner')
             .css('width', torrent.getPercent())
-            .html($(document.createElement('span')).html(torrent.state + ' ' + torrent.getPercent()))
+            .appendTo($bar);
+
+        $(document.createElement('span'))
+            .html(torrent.state + ' ' + torrent.getPercent())
             .appendTo($bar);
 
         return $bar;

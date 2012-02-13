@@ -28,13 +28,16 @@ a {
   width: 0%;
   text-align: center;
 }
-.progress_bar .inner span {
+.progress_bar span {
   color: #FFF;
   display: block;
   font-size: 0.9em;
   font-family: Verdana;
   text-align: center;
   width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 #overlay {
