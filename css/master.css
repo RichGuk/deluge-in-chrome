@@ -130,5 +130,9 @@ table#torrent_table {
     .table_cell_actions a.managed { background-position: 0 -66px; }
     .table_cell_actions a.unmanaged { background-position: 0 0; }
 
+    .delete-options a.cancel { background: url(/themes/standard/images/cancel.png) no-repeat left top; }
+    .delete-options a.data { background: url(/themes/standard/images/trash.png) no-repeat left top; }
+    .delete-options a.torrent { background: url(/themes/standard/images/database.png) no-repeat left top; }
+
 a:hover {color: #000000;}
 .clr { clear: both; }

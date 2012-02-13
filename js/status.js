@@ -326,10 +326,16 @@ jQuery(document).ready(function($) {
             $('.main_actions', $parentTd).hide();
             $parentTd.append(newElm);
             newElm.fadeIn('fast', function() {
-                var tmp = $(this);
-                tmp.append('<a href="#cancel" title="Cancel" rel="cancel"><img src="images/cancel.png" alt="C" /></a>');
-                tmp.append('<a href="#delete-data" title="Delete torrent AND data" rel="data"><img src="images/trash.png" alt="TD" /></a>');
-                tmp.append('<a href="#delete-torrent" title="Just delete torrent file" rel="torrent"><img src="images/file.png" alt="T" /></a>');
+                var $tmp = $(this);
+
+                $tmp.append(
+                    // Cancel.
+                    $(document.createElement('a')).addClass('cancel').prop('rel', 'cancel'),
+                    // Delete torrent and data.
+                    $(document.createElement('a')).addClass('data').prop('rel', 'data'),
+                    // Delete just torrent.
+                    $(document.createElement('a')).addClass('torrent').prop('rel', 'torrent')
+                );
             });
         });
 
