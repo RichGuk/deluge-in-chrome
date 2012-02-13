@@ -138,9 +138,7 @@ jQuery(document).ready(function($) {
                 $(document.createElement('a')).addClass('move_up'),
                 $(document.createElement('a')).addClass('move_down'),
                 // Auto managed options.
-                $(document.createElement('a')).addClass('toggle_managed').addClass(managed),
-                // More options..
-                $(document.createElement('a')).addClass('more')
+                $(document.createElement('a')).addClass('toggle_managed').addClass(managed)
             );
     }
 
