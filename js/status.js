@@ -268,9 +268,9 @@ jQuery(document).ready(function($) {
         $('.main_actions .state').live('click', function() {
             var rowData = getRowData(this);
             
-            var _method = rowData.torrent.state == 'Paused' ? 'core.resume_torrent' : 'core.pause_torrent';
+            var method = rowData.torrent.state == 'Paused' ? 'core.resume_torrent' : 'core.pause_torrent';
                         
-            Deluge.api(_method, [[rowData.torrentId]])
+            Deluge.api(method, [[rowData.torrentId]])
                 .success(function() {
                     if (Global.getDebugMode()) {
                         console.log('Deluge: Updated state');
@@ -369,6 +369,7 @@ jQuery(document).ready(function($) {
                     }
                     removeButtons();
                 });
+            return false;
         });
     })();
 
