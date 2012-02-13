@@ -8,14 +8,16 @@
 jQuery(document).ready(function($) {
     // Get extension background page for use within the code.
     var backgroundPage = chrome.extension.getBackgroundPage();
-    
+
     const REFRESH_INTERVAL = 2000;
     // Store the extension activation state.
     var extensionActivated = false;
 
+    var checked = [];
+    
     // Setup timer information.
     var refreshTimer = Timer(REFRESH_INTERVAL);
-    
+
     // Set the initial height for the overlay.
     var $overlay = $('#overlay').css({ height: $(document).height() });
 
@@ -73,6 +75,9 @@ jQuery(document).ready(function($) {
     function updateTable() {
         // Clear out any existing timers.
         refreshTimer.unsubscribe();
+        $('[name]=selected_torrents[checked]').each(function() {
+            checked.push($(this).val());        
+        });
         Torrents.update()
             .success(function() {
                 renderTable();
@@ -109,14 +114,19 @@ jQuery(document).ready(function($) {
         $tbody.empty();
         for(var i=0; i < torrents.length; i++) {
             var torrent = torrents[i];
-
+            var isChecked = '';
+            
+            
+            if (checked.indexOf(torrent.id) != -1) {
+                isChecked = 'checked=checked';
+            }
             var $tr = $(document.createElement('tr'))
                 .data({ id: torrent.id }) /* Store torrent id on the tr */
                 .append(
                 // Checkbox.
                 $(document.createElement('td'))
                     .addClass('table_cell_checkbox')
-                    .html($('<input type="checkbox" name="selected_torrents[]">').val(torrent.id)),
+                    .html($('<input type="checkbox" name="selected_torrents[]"' + isChecked + '>').val(torrent.id)),
 
                 // Position cell.
                 $(document.createElement('td'))
@@ -157,6 +167,7 @@ jQuery(document).ready(function($) {
             torrent = null;
             $tbody.append($tr);
         }
+        checked = [];
         $(document).trigger('table_updated');
     }
 
