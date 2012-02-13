@@ -322,11 +322,12 @@ jQuery(document).ready(function($) {
         $('.main_actions .delete').live('click', function() {
             pauseTableRefresh();
 
-            var parentTd = $(this).parents('td');
+            var $parentTd = $(this).parents('td');
             var newElm = $('<div>');
-            newElm.addClass('delete-options');
-            parentTd.append(newElm);
-            newElm.animate({width: '100px'}, 'fast', function() {
+            newElm.addClass('delete-options').hide();
+            $('.main_actions', $parentTd).hide();
+            $parentTd.append(newElm);
+            newElm.fadeIn('fast', function() {
                 var tmp = $(this);
                 tmp.append('<a href="#cancel" title="Cancel" rel="cancel"><img src="images/cancel.png" alt="C" /></a>');
                 tmp.append('<a href="#delete-data" title="Delete torrent AND data" rel="data"><img src="images/trash.png" alt="TD" /></a>');
