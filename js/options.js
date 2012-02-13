@@ -59,12 +59,16 @@ $(function() {
         }
         localStorage.delugeDownloadIcon = $downloadLinkChecked;
         
+        var background = chrome.extension.getBackgroundPage();
+        
         var contextMenu = localStorage.contextMenu;
         if ($contextMenuChecked
             && String($contextMenuChecked) != contextMenu) {
             message.push('Context Menu enabled!');
+            background.Background.addContextMenu();
         } else if (String($contextMenuChecked) != contextMenu) {
             message.push('Context Menu disabled!');
+            background.Background.removeContextMenu();
         }
         localStorage.contextMenu = $contextMenuChecked; 
 
@@ -77,7 +81,6 @@ $(function() {
         }
         localStorage.debugMode = $debugModeChecked;  
 
-        var background = chrome.extension.getBackgroundPage();
         background.Background.checkStatus();
 
         if ($debugModeChecked) {

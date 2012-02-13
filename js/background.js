@@ -298,17 +298,8 @@ var Background = (function($) {
                 sendResponse({msg: 'error', result: null, error: 'failed to download torrent from URL.'});
             });
     }
-
-    return pub;
-}(jQuery));
-
-// Run init stuff for the plugin.
-jQuery(document).ready(function($) {
-    Background.checkStatus();
-});
-
-(function() {
-    function addTorrent(OnClickData) {
+    
+    function handleContextMenuClick(OnClickData) {
         var torrentUrl = OnClickData.linkUrl;
         if(torrentUrl.search(/\/(download|get)\//) > 0 || torrentUrl.search(/\.torrent$/) > 0) {
             Background.addTorrentFromUrl({url: torrentUrl}, [], function(response) {
@@ -330,16 +321,40 @@ jQuery(document).ready(function($) {
         
         return false;
     }
-        
+    
+    var contextMenu = null;
+    
+    pub.addContextMenu = function() {
+        if (contextMenu === null) {
+            contextMenu = chrome.contextMenus.create({
+                "title": "Add to Deluge",
+                "contexts": ["link"],
+                "onclick" : handleContextMenuClick
+            });
+        }
+    }
+    
+    pub.removeContextMenu = function() {
+        if (contextMenu  !== null) {
+            chrome.contextMenus.remove(contextMenu);
+            contextMenu = null;
+        }
+    }
+    
     //for some reason the context menu is always added regardless of the if
     if (localStorage.contextMenu) {
-        chrome.contextMenus.create({
-            "title": "Add to Deluge",
-            "contexts": ["link"],
-            "onclick" : addTorrent
-        });
+        pub.addContextMenu();
+    } else {
+        pub.removeContextMenu();
     }
-})();
+
+    return pub;
+}(jQuery));
+
+// Run init stuff for the plugin.
+jQuery(document).ready(function($) {
+    Background.checkStatus();
+});
 
 /*
 * =====================================================================
