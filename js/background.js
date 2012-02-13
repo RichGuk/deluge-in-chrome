@@ -97,7 +97,7 @@ var Background = (function($) {
         if (Global.getDebugMode()) {
             console.log('Deluge: Checking status');
         }
-        
+
         var that = this;
 
         function checkStatus() {
@@ -207,7 +207,7 @@ var Background = (function($) {
         // Send deactivation to anything listening.
         chrome.extension.sendRequest({ msg: 'extension_deactivated' });
     };
-    
+
     /**
     * Add a torrent to Deluge using a URL. This method is meant to be called
     * as part of Chrome extensions messaging system.
@@ -249,7 +249,7 @@ var Background = (function($) {
                         sendResponse({msg: 'error', result: null, error: 'unable to add torrent to deluge'});
                     });
             }
-   
+
             // Need to get config values to add with the torrent first.
             Deluge.api('core.get_config_values', [['add_paused', 'compact_allocation', 'download_location',
                 'max_connections_per_torrent', 'max_download_speed_per_torrent',
@@ -298,7 +298,7 @@ var Background = (function($) {
                 sendResponse({msg: 'error', result: null, error: 'failed to download torrent from URL.'});
             });
     }
-    
+
     function handleContextMenuClick(OnClickData) {
         var torrentUrl = OnClickData.linkUrl;
         if(torrentUrl.search(/\/(download|get)\//) > 0 || torrentUrl.search(/\.torrent$/) > 0) {
@@ -318,12 +318,12 @@ var Background = (function($) {
                 console.log('Deluge: Link not a torrent!');
             }
         }
-        
+
         return false;
     }
-    
+
     var contextMenu = null;
-    
+
     pub.addContextMenu = function() {
         if (contextMenu === null) {
             contextMenu = chrome.contextMenus.create({
@@ -333,14 +333,14 @@ var Background = (function($) {
             });
         }
     }
-    
+
     pub.removeContextMenu = function() {
         if (contextMenu  !== null) {
             chrome.contextMenus.remove(contextMenu);
             contextMenu = null;
         }
     }
-    
+
     //for some reason the context menu is always added regardless of the if
     if (localStorage.contextMenu) {
         pub.addContextMenu();
@@ -371,7 +371,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     } else if(request.msg == 'enable_download_icon') {
         sendResponse(localStorage.delugeDownloadIcon);
     }
-  
+
     // We need to send a reponse, even if it's empty.
     sendResponse({msg: 'error', result: null, error: 'nothing called!'});
 });
