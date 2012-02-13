@@ -28,13 +28,16 @@ a {
   width: 0%;
   text-align: center;
 }
-.progress_bar .inner span {
+.progress_bar span {
   color: #FFF;
   display: block;
   font-size: 0.9em;
   font-family: Verdana;
   text-align: center;
   width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 #overlay {
@@ -126,6 +129,10 @@ table#torrent_table {
     .table_cell_actions a.toggle_managed { background: url(/themes/standard/images/auto_managed.png) no-repeat top left; }
     .table_cell_actions a.managed { background-position: 0 -66px; }
     .table_cell_actions a.unmanaged { background-position: 0 0; }
+
+    .delete-options a.cancel { background: url(/themes/standard/images/cancel.png) no-repeat left top; }
+    .delete-options a.data { background: url(/themes/standard/images/trash.png) no-repeat left top; }
+    .delete-options a.torrent { background: url(/themes/standard/images/database.png) no-repeat left top; }
 
 a:hover {color: #000000;}
 .clr { clear: both; }

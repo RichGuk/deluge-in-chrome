@@ -18,7 +18,7 @@ jQuery(document).ready(function($) {
     
     // Set the initial height for the overlay.
     var $overlay = $('#overlay').css({ height: $(document).height() });
-    
+
     // I can't get the popup to play nicely when there is a scroll bar and then
     // when there isn't - so going to adjust the width if a scroll bar is
     // visible (this needs to be done on timeout to give popup time to show).
@@ -40,7 +40,10 @@ jQuery(document).ready(function($) {
         $(document.createElement('div'))
             .addClass('inner')
             .css('width', torrent.getPercent())
-            .html($(document.createElement('span')).html(torrent.state + ' ' + torrent.getPercent()))
+            .appendTo($bar);
+
+        $(document.createElement('span'))
+            .html(torrent.state + ' ' + torrent.getPercent())
             .appendTo($bar);
 
         return $bar;
@@ -63,9 +66,7 @@ jQuery(document).ready(function($) {
                 $(document.createElement('a')).addClass('move_up'),
                 $(document.createElement('a')).addClass('move_down'),
                 // Auto managed options.
-                $(document.createElement('a')).addClass('toggle_managed').addClass(managed),
-                // More options..
-                $(document.createElement('a')).addClass('more')
+                $(document.createElement('a')).addClass('toggle_managed').addClass(managed)
             );
     }
 
@@ -84,14 +85,14 @@ jQuery(document).ready(function($) {
                 checkStatus();
             });
     }
-    
+
     /**
      * Pause the table refresh.
      */
     function pauseTableRefresh() {
         refreshTimer.unsubscribe();
     }
-    
+
      /**
     * Resume the table refresh.
     */
@@ -158,21 +159,19 @@ jQuery(document).ready(function($) {
         }
         $(document).trigger('table_updated');
     }
-    
+
     (function() {
         function getRowData(element) {
             var $parent = $(element).parents('tr');
             var torrentId = $parent.data('id');
-            var torrent = Torrents.getById(torrentId);            
-            
+            var torrent = Torrents.getById(torrentId);
             return {'torrentId': torrentId, 'torrent': torrent};
         }
-      
+
         $('.main_actions .toggle_managed').live('click', function() {
             var rowData = getRowData(this);
-            
             var autoManaged = !rowData.torrent.autoManaged;
-            
+
             Deluge.api('core.set_torrent_auto_managed', [rowData.torrentId, autoManaged])
                 .success(function() {
                     if (Global.getDebugMode()) {
@@ -186,12 +185,11 @@ jQuery(document).ready(function($) {
                     }
                 });
         });
-        
+
         $('.main_actions .state').live('click', function() {
             var rowData = getRowData(this);
-            
             var method = rowData.torrent.state == 'Paused' ? 'core.resume_torrent' : 'core.pause_torrent';
-                        
+
             Deluge.api(method, [[rowData.torrentId]])
                 .success(function() {
                     if (Global.getDebugMode()) {
@@ -205,10 +203,10 @@ jQuery(document).ready(function($) {
                     }
                 });
         });
-        
+
         $('.main_actions .move_up').live('click', function() {
             var rowData = getRowData(this);
-                                 
+
             Deluge.api('core.queue_up', [[rowData.torrentId]])
                 .success(function() {
                     if (Global.getDebugMode()) {
@@ -222,10 +220,10 @@ jQuery(document).ready(function($) {
                     }
                 });
         });
-        
+
         $('.main_actions .move_down').live('click', function() {
             var rowData = getRowData(this);
-                                 
+
             Deluge.api('core.queue_down', [[rowData.torrentId]])
                 .success(function() {
                     if (Global.getDebugMode()) {
@@ -239,25 +237,32 @@ jQuery(document).ready(function($) {
                     }
                 });
         });
-        
+
         $('.main_actions .delete').live('click', function() {
             pauseTableRefresh();
-                                             
-            var parentTd = $(this).parents('td');
+
+            var $parentTd = $(this).parents('td');
             var newElm = $('<div>');
-            newElm.addClass('delete-options');
-            parentTd.append(newElm);
-            newElm.animate({width: '100px'}, 'fast', function() {
-                var tmp = $(this);
-                tmp.append('<a href="#cancel" title="Cancel" rel="cancel"><img src="images/cancel.png" alt="C" /></a>');
-                tmp.append('<a href="#delete-data" title="Delete torrent AND data" rel="data"><img src="images/trash.png" alt="TD" /></a>');
-                tmp.append('<a href="#delete-torrent" title="Just delete torrent file" rel="torrent"><img src="images/file.png" alt="T" /></a>');
+            newElm.addClass('delete-options').hide();
+            $('.main_actions', $parentTd).hide();
+            $parentTd.append(newElm);
+            newElm.fadeIn('fast', function() {
+                var $tmp = $(this);
+
+                $tmp.append(
+                    // Cancel.
+                    $(document.createElement('a')).addClass('cancel').prop('rel', 'cancel'),
+                    // Delete torrent and data.
+                    $(document.createElement('a')).addClass('data').prop('rel', 'data'),
+                    // Delete just torrent.
+                    $(document.createElement('a')).addClass('torrent').prop('rel', 'torrent')
+                );
             });
         });
-        
+
         $('.delete-options a').live('click', function() {
             var rowData = getRowData(this);
-            
+
             var action = $(this).attr('rel') || 'cancel';
             // If canceling remove overlay and resume refresh now and return.
             if(action == 'cancel') {
@@ -268,7 +273,7 @@ jQuery(document).ready(function($) {
                 });
                 return false;
             }
-          
+
             function removeButtons() {
                 // Remove buttons, resume refresh.
                 $('.delete-options').fadeOut('fast', function() {
@@ -276,7 +281,7 @@ jQuery(document).ready(function($) {
                     updateTable();
                 });
             }
-          
+
             var delData = (action == 'data') ? true : false;
             Deluge.api('core.remove_torrent', [rowData.torrentId, delData])
                 .success(function() {
@@ -294,21 +299,21 @@ jQuery(document).ready(function($) {
             return false;
         });
     })();
-    
+
     (function() {
         var $inputBox = $('#manual_add_input');
         var $addButton = $('#manual_add_button');
-        
+
         $inputBox.keydown(function(event){
             if (event.keyCode == '13') {
                 event.preventDefault();
                 $addButton.click();
             }
         });
-        
+
         $addButton.live('click', function() {
             var url = $inputBox.val();
-            
+
             // Now check that the link contains either .torrent or download, get, etc...
             if(url.search(/\/(download|get)\//) > 0 || url.search(/\.torrent$/) > 0) {
                 chrome.extension.sendRequest({ msg: 'add_torrent_from_url', url: url},
@@ -359,8 +364,8 @@ jQuery(document).ready(function($) {
 
     // This function is called when the background page sends an activated
     // message, this happens roughly every minute so we only want to call
-    // updateTable, or hide any current overlays once, we can let the local
-    // timers in within this script handle table updating.
+    // updateTable, or hide any current overlays once. We can let the local
+    // timers within this script handle table updating.
     function activated() {
         if (!extensionActivated) {
             if (Global.getDebugMode()) {

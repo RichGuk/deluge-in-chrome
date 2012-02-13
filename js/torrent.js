@@ -33,7 +33,7 @@ Torrent.prototype.getPosition = function() {
     if (this.position < 0) {
         return '';
     }
-    return this.position;
+    return this.position + 1;
 };
 
 Torrent.prototype.getPercent = function() {
