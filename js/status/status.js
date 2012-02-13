@@ -1,78 +1,4 @@
 /*
- * Module responsible for fetching, storing and sorting torrent objects.
- */
-var Torrents = (function($) {
-    var pub = {};
-    // Stores all torrent data, using array so it can be sorted.
-    var torrents = [];
-
-    function sortCallback(a, b) {
-        a = a.name;
-        b = b.name;
-
-        if(a < b) {
-            return -1;
-        }
-        if(a > b) {
-            return 1;
-        }
-        return 0;
-    }
-
-    pub.getAll = function() {
-        return torrents;
-    };
-
-    pub.getById = function(val) {
-        for (var i = 0; i < torrents.length; i++) {
-            if (torrents[i].id == val) {
-                return torrents[i];
-            }
-        }
-        return false;
-    };
-
-    pub.cleanup = function() {
-        for(var i=0; i < torrents.length; i++) {
-            torrents[i] = null;
-        }
-        torrents = null;
-    };
-
-    pub.update = function() {
-        var that = this;
-        var api = Deluge.api('web.update_ui', [[
-            'queue', 'name', 'total_size', 'state', 'progress',
-            'download_payload_rate', 'upload_payload_rate', 'eta',
-            'ratio', 'is_auto_managed'], {}], { timeout: 2000 })
-            .success(function(response) {
-                // Reset torrents array.
-                that.cleanup();
-                torrents = [];
-                for(var id in response.torrents) {
-                    if (response.torrents.hasOwnProperty(id)) {
-                        torrents.push(new Torrent(id, response.torrents[id]));
-                    }
-                }
-                response = null;
-
-                // Sort the torrents.
-                torrents.sort(sortCallback);
-                if (localStorage.sortMethod == 'desc') {
-                    torrents.reverse();
-                }
-                if (Global.getDebugMode()) {
-                    console.log(torrents);
-                }
-            });
-
-        return api;
-    };
-
-    return pub;
-}(jQuery));
-
-/*
  * Responsible for all display, page or functional control on the status page.
  *
  * - Setting refresh timers.
@@ -84,6 +10,7 @@ jQuery(document).ready(function($) {
     var backgroundPage = chrome.extension.getBackgroundPage();
     // Setup timer information.
     var refreshTimer = null;
+    
     const REFRESH_INTERVAL = 2000;
     // Store the extension activation state.
     var extensionActivated = false;
@@ -237,11 +164,10 @@ jQuery(document).ready(function($) {
     }
     
     (function() {
-        
         function getRowData(element) {
             var $parent = $(element).parents('tr');
             var torrentId = $parent.data('id');
-            var torrent = Torrents.getById(torrentId);
+            var torrent = Torrents.getById(torrentId);            
             
             return {'torrentId': torrentId, 'torrent': torrent};
         }
