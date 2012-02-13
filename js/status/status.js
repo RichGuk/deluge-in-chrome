@@ -81,6 +81,7 @@ jQuery(document).ready(function($) {
         Torrents.update()
             .success(function() {
                 renderTable();
+                renderGlobalInformation();
                 refreshTimer.subscribe(updateTable);
             })
             .error(function() {
@@ -104,6 +105,21 @@ jQuery(document).ready(function($) {
     function resumeTableRefresh() {
         refreshTimer.unsubscribe();
         refreshTimer.subscribe(updateTable);
+    }
+
+    function renderGlobalInformation() {
+        var information = Torrents.getGlobalInformation();
+        $globalInformation = $('#global-information');
+
+        if (Global.getDebugMode()) {
+            console.log(information);
+        }
+
+        $('.all', $globalInformation).html(information['all']);
+        $('.downloading', $globalInformation).html(information['downloading']);
+        $('.paused', $globalInformation).html(information['paused']);
+        $('.seeding', $globalInformation).html(information['seeding']);
+        $('.queued', $globalInformation).html(information['queued']);
     }
 
     function renderTable() {

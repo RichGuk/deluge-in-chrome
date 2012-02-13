@@ -5,6 +5,7 @@ var Torrents = (function($) {
     var pub = {};
     // Stores all torrent data, using array so it can be sorted.
     var torrents = [];
+    var globalInformation = {};
 
     function sortCallback(a, b) {
         a = a.name;
@@ -32,6 +33,10 @@ var Torrents = (function($) {
         return false;
     };
 
+    pub.getGlobalInformation = function() {
+        return globalInformation;
+    };
+
     pub.cleanup = function() {
         for(var i=0; i < torrents.length; i++) {
             torrents[i] = null;
@@ -54,6 +59,14 @@ var Torrents = (function($) {
                         torrents.push(new Torrent(id, response.torrents[id]));
                     }
                 }
+
+                for(id in response.filters.state) {
+                    if (response.filters.state.hasOwnProperty(id)) {
+                        var tmp = response.filters.state[id];
+                        globalInformation[tmp[0].toLowerCase()] = tmp[1];
+                    }
+                }
+
                 response = null;
 
                 // Sort the torrents.

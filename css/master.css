@@ -71,6 +71,18 @@ a {
     vertical-align: middle;
   }
 
+#global-information {
+  display: block;
+  float: right;
+  padding: 5px;
+  font-size: 1.1em;
+  color: darkRed;
+}
+  #global-information span.data {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
 table#torrent_table {
   border-spacing: 0;
   width: 790px;
