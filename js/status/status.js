@@ -8,13 +8,14 @@
 jQuery(document).ready(function($) {
     // Get extension background page for use within the code.
     var backgroundPage = chrome.extension.getBackgroundPage();
-    // Setup timer information.
-    var refreshTimer = null;
     
     const REFRESH_INTERVAL = 2000;
     // Store the extension activation state.
     var extensionActivated = false;
 
+    // Setup timer information.
+    var refreshTimer = Timer(REFRESH_INTERVAL);
+    
     // Set the initial height for the overlay.
     var $overlay = $('#overlay').css({ height: $(document).height() });
     
@@ -70,11 +71,11 @@ jQuery(document).ready(function($) {
 
     function updateTable() {
         // Clear out any existing timers.
-        clearTimeout(refreshTimer);
+        refreshTimer.unsubscribe();
         Torrents.update()
             .success(function() {
                 renderTable();
-                refreshTimer = setTimeout(updateTable, REFRESH_INTERVAL);
+                refreshTimer.subscribe(updateTable);
             })
             .error(function() {
                 // Problem fetching information, perform a status check.
@@ -88,20 +89,15 @@ jQuery(document).ready(function($) {
      * Pause the table refresh.
      */
     function pauseTableRefresh() {
-        if (refreshTimer) {
-            clearInterval(refreshTimer);
-        }
+        refreshTimer.unsubscribe();
     }
     
      /**
     * Resume the table refresh.
     */
     function resumeTableRefresh() {
-        if (refreshTimer) {
-          clearInterval(refreshTimer);
-          refreshTimer = null;
-        }
-        refreshTimer = setInterval('updateTable()', REFRESH_INTERVAL);
+        refreshTimer.unsubscribe();
+        refreshTimer.subscribe(updateTable);
     }
 
     function renderTable() {
