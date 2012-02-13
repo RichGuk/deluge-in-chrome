@@ -374,20 +374,31 @@ jQuery(document).ready(function($) {
     })();
     
     (function() {
-        $('#manual_add_button').live('click', function() {
-            var url = $('#manual_add_input').val();
+        var $inputBox = $('#manual_add_input');
+        var $addButton = $('#manual_add_button');
+        
+        $inputBox.keydown(function(event){
+            if (event.keyCode == '13') {
+                event.preventDefault();
+                $addButton.click();
+            }
+        });
+        
+        $addButton.live('click', function() {
+            var url = $inputBox.val();
             
             // Now check that the link contains either .torrent or download, get, etc...
             if(url.search(/\/(download|get)\//) > 0 || url.search(/\.torrent$/) > 0) {
                 chrome.extension.sendRequest({ msg: 'add_torrent_from_url', url: url},
                 function(response) {
                     if(response.msg == 'success') {
+                        $inputBox.val('');
                     }
                 });
                 return false;
             }
             return false;
-        })
+        });
     })();
 
     /*
