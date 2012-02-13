@@ -372,6 +372,23 @@ jQuery(document).ready(function($) {
             return false;
         });
     })();
+    
+    (function() {
+        $('#manual_add_button').live('click', function() {
+            var url = $('#manual_add_input').val();
+            
+            // Now check that the link contains either .torrent or download, get, etc...
+            if(url.search(/\/(download|get)\//) > 0 || url.search(/\.torrent$/) > 0) {
+                chrome.extension.sendRequest({ msg: 'add_torrent_from_url', url: url},
+                function(response) {
+                    if(response.msg == 'success') {
+                    }
+                });
+                return false;
+            }
+            return false;
+        })
+    })();
 
     /*
      * Check the status of the extension and do the handling for the popup.
