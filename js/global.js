@@ -1,9 +1,9 @@
-var Global = (function() {
+var Global = (function () {
     var pub = {};
     
-    pub.getDebugMode = function() {
+    pub.getDebugMode = function () {
         return localStorage.debugMode || false;
     };
     
     return pub;
-})();
+}());

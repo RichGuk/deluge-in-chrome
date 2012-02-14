@@ -11,8 +11,8 @@ function Torrent(id, data) {
     this.autoManaged = data.is_auto_managed;
 }
 
-Torrent.prototype.calcSize = function(size) {
-    bytes = size / 1024.0;
+Torrent.prototype.calcSize = function (size) {
+    var bytes = size / 1024.0;
     if (bytes < 1024) {
         return bytes.toFixed(1) + ' KiB';
     }
@@ -25,36 +25,36 @@ Torrent.prototype.calcSize = function(size) {
     return (bytes / 1024).toFixed(1) + ' GiB';
 };
 
-Torrent.prototype.getHumanSize = function() {
+Torrent.prototype.getHumanSize = function () {
     return this.calcSize(this.size);
 };
 
-Torrent.prototype.getPosition = function() {
+Torrent.prototype.getPosition = function () {
     if (this.position < 0) {
         return '';
     }
     return this.position + 1;
 };
 
-Torrent.prototype.getPercent = function() {
+Torrent.prototype.getPercent = function () {
     return (Math.round(this.progress * Math.pow(10, 2)) / Math.pow(10, 2)) + '%';
 };
 
-Torrent.prototype.getDownload = function() {
+Torrent.prototype.getDownload = function () {
     return this.calcSize(this.speedDownload) + '/s';
 };
 
-Torrent.prototype.getUpload = function() {
+Torrent.prototype.getUpload = function () {
     return this.calcSize(this.speedUpload) + '/s';
 };
 
-Torrent.prototype.getSpeeds = function() {
+Torrent.prototype.getSpeeds = function () {
     return this.getDownload() + ' - ' + this.getUpload();
 };
 
-Torrent.prototype.getEta = function() {
-    var secs = 0, mins = 0, hours = 0, days = 0;
-    var time = this.eta;
+Torrent.prototype.getEta = function () {
+    var secs = 0, mins = 0, hours = 0, days = 0
+        , time = this.eta;
 
     if (time === 0) {
         return '&infin;';

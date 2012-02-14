@@ -1,4 +1,4 @@
-var Deluge = (function(Deluge, $) {
+var Deluge = (function (Deluge, $) {
     Deluge = Deluge || {};
 
     function endpoint() {
@@ -15,18 +15,18 @@ var Deluge = (function(Deluge, $) {
      * Ajax wrapper for making calls to Deluge web API.
      *
      */
-    Deluge.api = function(method, params, options) {
+    Deluge.api = function (method, params, options) {
         var that = this;
 
-        var deferred = $.Deferred(function(d) {
+        var deferred = $.Deferred(function (d) {
             // Default ajax options.
             var defaults = {
                 url: endpoint(),
                 type: 'POST',
                 dataType: 'json'
-            };
-            // Extend default with any user passed options.
-            var settings = $.extend({}, defaults, options);
+            }
+                // Extend default with any user passed options.
+                , settings = $.extend({}, defaults, options);
 
             // Create the API call data.
             settings.data = JSON.stringify({
@@ -41,7 +41,7 @@ var Deluge = (function(Deluge, $) {
 
             // Replace the success and error so we can do some generic handling
             // for the response.
-            settings.success = function(response, textStatus, jqXHR) {
+            settings.success = function (response, textStatus, jqXHR) {
                 if (response.error !== null) {
                     d.rejectWith(this, [jqXHR, that.API_ERROR, response.error]);
                 } else {
@@ -49,7 +49,7 @@ var Deluge = (function(Deluge, $) {
                 }
             };
 
-            settings.error = function(jqXHR, textStatus, errorThrown) {
+            settings.error = function (jqXHR, textStatus, errorThrown) {
                 d.rejectWith(this, [jqXHR, textStatus, errorThrown]);
             };
 

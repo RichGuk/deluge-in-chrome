@@ -1,27 +1,27 @@
-$(function() {
-    var $address = $('#address');
-    var $password = $('#password');
-    var $delugeDownloadIcon = $('#enable_download_torrent');
-    var $debugMode = $('#enable_debug_mode');
-    var $contextMenu = $('#enable_context_menu');
+$(function () {
+    var $address = $('#address')
+        , $password = $('#password')
+        , $delugeDownloadIcon = $('#enable_download_torrent')
+        , $debugMode = $('#enable_debug_mode')
+        , $contextMenu = $('#enable_context_menu');
 
     function restoreOptions() {
         $address.val(localStorage.delugeAddress);
         $password.val(localStorage.delugePassword);
   
-        if (localStorage.delugeDownloadIcon == 'true') {
+        if (localStorage.delugeDownloadIcon === 'true') {
             $delugeDownloadIcon.attr('checked', 'checked');
         } else {
             $delugeDownloadIcon.removeAttr('checked');
         }
     
-        if (localStorage.contextMenu == 'true') {
+        if (localStorage.contextMenu === 'true') {
             $contextMenu.attr('checked', 'checked');
         } else {
             $contextMenu.removeAttr('checked');
         }
   
-        if (localStorage.debugMode == 'true') {
+        if (localStorage.debugMode === 'true') {
             $debugMode.attr('checked', 'checked');
         } else {
             $debugMode.removeAttr('checked');
@@ -29,54 +29,53 @@ $(function() {
     }
 
     function saveOptions() {
-        var message = new Array();
-        var addressVal = $address.val();
-        var passwordVal = $password.val();
-        var $downloadLinkChecked = $delugeDownloadIcon.is(':checked');
-        var $debugModeChecked = $debugMode.is(':checked');
-        var $contextMenuChecked = $contextMenu.is(':checked');
+        var message = []
+            , addressVal = $address.val()
+            , passwordVal = $password.val()
+            , $downloadLinkChecked = $delugeDownloadIcon.is(':checked')
+            , $debugModeChecked = $debugMode.is(':checked')
+            , $contextMenuChecked = $contextMenu.is(':checked')
+            , downloadIcon = localStorage.delugeDownloadIcon
+            , background = chrome.extension.getBackgroundPage()
+            , contextMenu = localStorage.contextMenu
+            , debugMode = localStorage.debugMode
+            , messageText = ''
+            , $message = $('#status-message');
 
         if (addressVal) {
-            if (localStorage.delugeAddress != addressVal) {
+            if (localStorage.delugeAddress !== addressVal) {
                 message.push('Address updated.');
             }
             localStorage.delugeAddress = addressVal.replace(/\/$/, '');
         }
         
         if (passwordVal) {
-            if (localStorage.delugePassword != passwordVal) {
+            if (localStorage.delugePassword !== passwordVal) {
                 message.push('Password updated.');
             }
             localStorage.delugePassword = passwordVal;
         }
         
-        var downloadIcon = localStorage.delugeDownloadIcon;
-        if ($downloadLinkChecked
-            && String($downloadLinkChecked) != downloadIcon) {
+        if ($downloadLinkChecked && String($downloadLinkChecked) !== downloadIcon) {
             message.push('Download torrent icon enabled!');
-        } else if (String($downloadLinkChecked) != downloadIcon) {
+        } else if (String($downloadLinkChecked) !== downloadIcon) {
             message.push('Download torrent icon disabled!');
         }
         localStorage.delugeDownloadIcon = $downloadLinkChecked;
         
-        var background = chrome.extension.getBackgroundPage();
         
-        var contextMenu = localStorage.contextMenu;
-        if ($contextMenuChecked
-            && String($contextMenuChecked) != contextMenu) {
+        if ($contextMenuChecked && String($contextMenuChecked) !== contextMenu) {
             message.push('Context Menu enabled!');
             background.Background.addContextMenu();
-        } else if (String($contextMenuChecked) != contextMenu) {
+        } else if (String($contextMenuChecked) !== contextMenu) {
             message.push('Context Menu disabled!');
             background.Background.removeContextMenu();
         }
         localStorage.contextMenu = $contextMenuChecked; 
 
-        var debugMode = localStorage.debugMode;
-        if ($debugModeChecked
-            && String($debugModeChecked) != debugMode) {
+        if ($debugModeChecked && String($debugModeChecked) !== debugMode) {
             message.push('Debug mode enabled!');
-        } else if (String($debugModeChecked) != debugMode) {
+        } else if (String($debugModeChecked) !== debugMode) {
             message.push('Debug mode disabled!');
         }
         localStorage.debugMode = $debugModeChecked;  
@@ -87,34 +86,37 @@ $(function() {
             console.log('Deluge: options saved!');
         }
         
-        if(message.length > 0) {
-            var messageText = '';
-            $.each(message, function(index, obj) {
+        function hideMessage() {
+            $message.fadeOut();
+        }
+        
+        if (message.length > 0) {
+            $.each(message, function (index, obj) {
                 messageText += obj + '<br>';
             });
-            $('#status-message').html(messageText).fadeIn();
-            setTimeout('$("#status-message").fadeOut();', 5000);
+            $message.html(messageText).fadeIn();
+            setTimeout(hideMessage, 5000);
         }
     }
 
 
-    (function() {
-        $('.buttons .save').live('click', function() {
+    (function () {
+        $('.buttons .save').live('click', function () {
             saveOptions();
             window.close();
             return false;
         });
 
-        $('.buttons .apply').live('click', function() {
+        $('.buttons .apply').live('click', function () {
             saveOptions();
             return false;
         });
 
-        $('.buttons .cancel').live('click', function() {
+        $('.buttons .cancel').live('click', function () {
             window.close();
             return false;
         });
 
         restoreOptions();
-    })();
+    }());
 });
