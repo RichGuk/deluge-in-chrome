@@ -194,8 +194,10 @@ jQuery(document).ready(function($) {
             var torrent = Torrents.getById(torrentId);
             return {'torrentId': torrentId, 'torrent': torrent};
         }
+        
+        var $mainActions = $('.main_actions'); 
 
-        $('.main_actions .toggle_managed').live('click', function() {
+        $('.toggle_managed', $mainActions).live('click', function() {
             var rowData = getRowData(this);
             var autoManaged = !rowData.torrent.autoManaged;
 
@@ -213,7 +215,7 @@ jQuery(document).ready(function($) {
                 });
         });
 
-        $('.main_actions .state').live('click', function() {
+        $('.state', $mainActions).live('click', function() {
             var rowData = getRowData(this);
             var method = rowData.torrent.state == 'Paused' ? 'core.resume_torrent' : 'core.pause_torrent';
 
@@ -231,7 +233,7 @@ jQuery(document).ready(function($) {
                 });
         });
 
-        $('.main_actions .move_up').live('click', function() {
+        $('.move_up', $mainActions).live('click', function() {
             var rowData = getRowData(this);
 
             Deluge.api('core.queue_up', [[rowData.torrentId]])
@@ -248,7 +250,7 @@ jQuery(document).ready(function($) {
                 });
         });
 
-        $('.main_actions .move_down').live('click', function() {
+        $('.move_down', $mainActions).live('click', function() {
             var rowData = getRowData(this);
 
             Deluge.api('core.queue_down', [[rowData.torrentId]])
@@ -264,14 +266,12 @@ jQuery(document).ready(function($) {
                     }
                 });
         });
-
-        $('.main_actions .delete').live('click', function() {
-            pauseTableRefresh();
-
-            var $parentTd = $(this).parents('td');
+        
+        function showDeleteOptions($parent, actionClass) {
+            var $parentTd = $parent;             
             var newElm = $('<div>');
             newElm.addClass('delete-options').hide();
-            $('.main_actions', $parentTd).hide();
+            $(actionClass, $parentTd).hide();
             $parentTd.append(newElm);
             newElm.fadeIn('fast', function() {
                 var $tmp = $(this);
@@ -285,22 +285,22 @@ jQuery(document).ready(function($) {
                     $(document.createElement('a')).addClass('torrent').prop('rel', 'torrent')
                 );
             });
+        }
+
+        $('.delete', $mainActions).live('click', function() {
+            pauseTableRefresh();
+
+            showDeleteOptions($(this).parents('td'), '.main_actions');
+            
+        });
+        
+        $('.all_actions .delete').live('click', function() {
+            pauseTableRefresh();
+
+            showDeleteOptions($(this).parents('td'), '.all_actions');   
         });
 
         $('.delete-options a').live('click', function() {
-            var rowData = getRowData(this);
-
-            var action = $(this).attr('rel') || 'cancel';
-            // If canceling remove overlay and resume refresh now and return.
-            if(action == 'cancel') {
-                $('.delete-options').fadeOut('fast', function() {
-                  // Force an update.
-                  resumeTableRefresh();
-                  updateTable();
-                });
-                return false;
-            }
-
             function removeButtons() {
                 // Remove buttons, resume refresh.
                 $('.delete-options').fadeOut('fast', function() {
@@ -308,21 +308,43 @@ jQuery(document).ready(function($) {
                     updateTable();
                 });
             }
+            
+            var action = $(this).attr('rel') || 'cancel';
+            // If canceling remove overlay and resume refresh now and return.
+            if(action == 'cancel') {
+                removeButtons();
+                return false;
+            }
 
-            var delData = (action == 'data') ? true : false;
-            Deluge.api('core.remove_torrent', [rowData.torrentId, delData])
-                .success(function() {
-                    if (Global.getDebugMode()) {
-                        console.log('Deluge: Removed torrent');
-                    }
-                    removeButtons();
-                })
-                .error(function() {
-                    if (Global.getDebugMode()) {
-                        console.log('Deluge: Failed to remove torrent');
-                    }
-                    removeButtons();
+            var parentClass = $(this).parents('td').class();
+            var delData = (action === 'data') ? true : false;
+
+            
+            function removeTorrent(id) {
+                Deluge.api('core.remove_torrent', [id, delData])
+                    .success(function() {
+                        if (Global.getDebugMode()) {
+                            console.log('Deluge: Removed torrent');
+                        }
+                        removeButtons();
+                    })
+                    .error(function() {
+                        if (Global.getDebugMode()) {
+                            console.log('Deluge: Failed to remove torrent');
+                        }
+                        removeButtons();
+                    });
+            }            
+            
+            if (parentClass === 'table_cell_actions') {
+                var rowData = getRowData(this);
+                removeTorrent(rowData.torrentId);
+            } else {
+                $('[name]=selected_torrents[checked]').each(function() {
+                    var rowData = getRowData(this);
+                    removeTorrent(rowData.torrentId);        
                 });
+            }
             return false;
         });
     })();
@@ -332,7 +354,7 @@ jQuery(document).ready(function($) {
         var $addButton = $('#manual_add_button');
 
         $inputBox.keydown(function(event){
-            if (event.keyCode == '13') {
+            if (event.keyCode === '13') {
                 event.preventDefault();
                 $addButton.click();
             }
