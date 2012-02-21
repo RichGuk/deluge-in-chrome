@@ -104,13 +104,13 @@ var Background = (function($) {
             .success(function (response) {
                 // Connected: activate the extension.
                 if (response === true) {
-                    that.activate();
+                    pub.activate();
                     statusTimer = setTimeout(pub.checkStatus, STATUS_CHECK_INTERVAL);
                 } else {
                     // Authenticated but not connected - attempt to connect to
                     // daemon.
-                    that.connect().done(function () {
-                        that.activate();
+                    pub.connect().done(function () {
+                        pub.activate();
                         // Create timer.
                         statusTimer = setTimeout(pub.checkStatus, STATUS_CHECK_INTERVAL);
                     });
@@ -121,7 +121,7 @@ var Background = (function($) {
                     // If unauthenticated then attempt login.
                     if (err.code === Deluge.API_AUTH_CODE) {
                         // Login and then check status again!
-                        that.login()
+                        pub.login()
                             .success(function (res) {
                                 // If successful check status again now.
                                 if (res === true) {
@@ -133,7 +133,7 @@ var Background = (function($) {
                                         console.log('Deluge: Incorrect login details.');
                                     }
                                     statusTimer = setTimeout(check_status, STATUS_CHECK_ERROR_INTERVAL);
-                                    that.deactivate();
+                                    pub.deactivate();
                                     autoLoginFailed();
                                 }
                             })
@@ -141,14 +141,14 @@ var Background = (function($) {
                                 if (Global.getDebugMode()) {
                                     console.log('Deluge: Error logging in');
                                 }
-                                that.deactivate();
+                                pub.deactivate();
                             });
                     } else {
                         if (Global.getDebugMode()) {
                             console.log('Deluge: API error occured');
                         }
                         // Unknown API error, deactivate the extension.
-                        that.deactivate();
+                        pub.deactivate();
                     }
                     // Setup interval for a repeat check.
                     statusTimer = setTimeout(pub.checkStatus, STATUS_CHECK_INTERVAL);
@@ -160,7 +160,7 @@ var Background = (function($) {
                         console.log('Deluge: Unknown error occured');
                     }
                     statusTimer = setTimeout(pub.checkStatus, STATUS_CHECK_ERROR_INTERVAL);
-                    that.deactivate();
+                    pub.deactivate();
                 }
             });
 
