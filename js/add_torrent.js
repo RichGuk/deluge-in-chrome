@@ -45,7 +45,7 @@ function showDownloadIcon() {
 }
 
 function detectMagnetLinks() {
-    $('a[href*=magnet], a:contains(magnet)').live('click', function () {
+    $('a[href*="magnet:?"], a:contains("magnet:?")').live('click', function () {
         var link = this;
         
         chrome.extension.sendRequest({ msg: 'add_torrent_from_magnet', url: this.href}
