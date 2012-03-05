@@ -2,6 +2,7 @@ $(function () {
     var $address = $('#address')
         , $password = $('#password')
         , $delugeDownloadIcon = $('#enable_download_torrent')
+        , $oneClickMagnets = $('#enable_one_click_magnet')
         , $debugMode = $('#enable_debug_mode')
         , $contextMenu = $('#enable_context_menu');
 
@@ -13,6 +14,12 @@ $(function () {
             $delugeDownloadIcon.attr('checked', 'checked');
         } else {
             $delugeDownloadIcon.removeAttr('checked');
+        }
+        
+        if (localStorage.oneClickMagnets === 'true') {
+            $oneClickMagnets.attr('checked', 'checked');
+        } else {
+            $oneClickMagnets.removeAttr('checked');
         }
     
         if (localStorage.contextMenu === 'true') {
@@ -33,9 +40,11 @@ $(function () {
             , addressVal = $address.val()
             , passwordVal = $password.val()
             , $downloadLinkChecked = $delugeDownloadIcon.is(':checked')
+            , $oneClickMagnetsChecked = $oneClickMagnets.is(':checked')
             , $debugModeChecked = $debugMode.is(':checked')
             , $contextMenuChecked = $contextMenu.is(':checked')
             , downloadIcon = localStorage.delugeDownloadIcon
+            , oneClickMagnets = localStorage.oneClickMagnets
             , background = chrome.extension.getBackgroundPage()
             , contextMenu = localStorage.contextMenu
             , debugMode = localStorage.debugMode
@@ -63,6 +72,12 @@ $(function () {
         }
         localStorage.delugeDownloadIcon = $downloadLinkChecked;
         
+        if ($oneClickMagnetsChecked && String($oneClickMagnetsChecked) !== oneClickMagnets) {
+            message.push('One click magnet downloads enabled!');
+        } else if (String($oneClickMagnetsChecked) !== oneClickMagnets) {
+            message.push('One click magnet downloads disabled!');
+        }
+        localStorage.oneClickMagnets = $oneClickMagnetsChecked;
         
         if ($contextMenuChecked && String($contextMenuChecked) !== contextMenu) {
             message.push('Context Menu enabled!');

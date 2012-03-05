@@ -370,6 +370,15 @@ jQuery(document).ready(function ($) {
                         }
                     });
                 return false;
+            } else if (url.search(/magnet:/) != -1) {
+                chrome.extension.sendRequest({ msg: 'add_torrent_from_magnet', url: url},
+                    function (response) {
+                        console.log(response);
+                        if (response.msg === 'success') {
+                            $inputBox.val('');
+                        }
+                    });
+                return false;
             }
             return false;
         });

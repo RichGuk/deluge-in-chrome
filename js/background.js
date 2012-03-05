@@ -292,10 +292,51 @@ var Background = (function($) {
             });
     };
 
+    /**
+    * Add a torrent to Deluge using a magnet URL. This method is meant to be called
+    * as part of Chrome extensions messaging system.
+    *
+    * @see chrome.extension.sendRequest && chrome.extension.onRequest
+    */
+    pub.addTorrentFromMagnet = function (request, sender, sendResponse) {
+        Deluge.api('core.add_torrent_magnet', [request.url, ''])
+            .success(function (id) {
+                if (id) {
+                    if (Global.getDebugMode()) {
+                        console.log('deluge: downloaded torrent.');
+                    }
+                    sendResponse({msg: 'success', result: id, error: null});
+                    return;
+                }
+                if (Global.getDebugMode()) {
+                    console.log('deluge: failed to add torrent from magnet, no obj or result.');
+                }
+                sendResponse({msg: 'error', result: null, error: 'failed to add torrent from magnet.'});
+            })
+            .error(function (req, status, err) {
+                if (Global.getDebugMode()) {
+                    console.log('deluge: failed to add torrent from magnet.');
+                }
+                sendResponse({msg: 'error', result: null, error: 'failed to add torrent from magnet.'});
+            });
+    }
+    
     function handleContextMenuClick(OnClickData) {
         var torrentUrl = OnClickData.linkUrl;
         if (torrentUrl.search(/\/(download|get)\//) > 0 || torrentUrl.search(/\.torrent$/) > 0) {
             Background.addTorrentFromUrl({url: torrentUrl}, [], function (response) {
+                if (response.msg === 'success') {
+                    if (Global.getDebugMode) {
+                        console.log('Deluge: Torrent added');
+                    }
+                } else {
+                    if (Global.getDebugMode) {
+                        console.log('Deluge: Torrent could not be added');
+                    }
+                }
+            });
+        } else if (torrentUrl.search(/magnet:/) != -1) {
+            Background.addTorrentFromMagnet({url: torrentUrl}, [], function (response) {
                 if (response.msg === 'success') {
                     if (Global.getDebugMode) {
                         console.log('Deluge: Torrent added');
@@ -359,8 +400,15 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
     if (request.msg === 'add_torrent_from_url') {
         Background.addTorrentFromUrl(request, sender, sendResponse);
         return;
-    } else if (request.msg === 'enable_download_icon') {
-        sendResponse(localStorage.delugeDownloadIcon);
+    } else if (request.msg === 'get_download_options') {
+        sendResponse({
+            'enable_deluge_icon': localStorage.delugeDownloadIcon
+            , 'enable_one_click_magnets': localStorage.oneClickMagnets
+            });
+        return;
+    } else if  (request.msg === 'add_torrent_from_magnet') {
+        Background.addTorrentFromMagnet(request, sender, sendResponse);
+        return;
     }
 
     // We need to send a reponse, even if it's empty.

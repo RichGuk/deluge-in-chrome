@@ -44,8 +44,21 @@ function showDownloadIcon() {
     });
 }
 
-chrome.extension.sendRequest({msg: 'enable_download_icon'}, function (response) {
-    if (response === 'true') {
+function detectMagnetLinks() {
+    $('a[href*=magnet], a:contains(magnet)').live('click', function () {
+        var link = this;
+        
+        chrome.extension.sendRequest({ msg: 'add_torrent_from_magnet', url: this.href}
+            );
+        return false;
+    });
+}
+
+chrome.extension.sendRequest({msg: 'get_download_options'}, function (response) {
+    if (response.enable_deluge_icon === 'true') {
         showDownloadIcon();
+    }
+    if (response.enable_one_click_magnets === 'true') {
+        detectMagnetLinks();
     }
 });
