@@ -379,6 +379,23 @@ var Background = (function($) {
     } else {
         pub.removeContextMenu();
     }
+    
+    pub.getVersion = function(sendResponse) {
+        Deluge.api('daemon.info')
+            .success(function (version) {
+                if (Global.getDebugMode()) {
+                    console.log('deluge: got version.');
+                }
+                version = version.split('-')[0].split('.');
+                sendResponse({major: Number(version[0]), minor: Number(version[1]), build: Number(version[2])});
+            })
+            .error(function (req, status, err) {
+                if (Global.getDebugMode()) {
+                    console.log('deluge: failed to get version.');
+                }
+                sendResponse(0);
+            });
+    }
 
     return pub;
 }(jQuery));

@@ -4,9 +4,10 @@ $(function () {
         , $delugeDownloadIcon = $('#enable_download_torrent')
         , $oneClickMagnets = $('#enable_one_click_magnet')
         , $debugMode = $('#enable_debug_mode')
-        , $contextMenu = $('#enable_context_menu');
-
-    function restoreOptions() {
+        , $contextMenu = $('#enable_context_menu')
+        , background = chrome.extension.getBackgroundPage();
+    
+    function restoreOptions(version) {
         $address.val(localStorage.delugeAddress);
         $password.val(localStorage.delugePassword);
   
@@ -16,11 +17,16 @@ $(function () {
             $delugeDownloadIcon.removeAttr('checked');
         }
         
-        if (localStorage.oneClickMagnets === 'true') {
-            $oneClickMagnets.attr('checked', 'checked');
-        } else {
-            $oneClickMagnets.removeAttr('checked');
-        }
+        if (version.major > 1 || (version.major === 1 && version.minor > 3) ||
+                (version.major === 1 && version.minor === 3 && version.build > 3)) {
+            $('#magnet').show();
+            
+            if (localStorage.oneClickMagnets === 'true') {
+                $oneClickMagnets.attr('checked', 'checked');
+            } else {
+                $oneClickMagnets.removeAttr('checked');
+            }
+        } 
     
         if (localStorage.contextMenu === 'true') {
             $contextMenu.attr('checked', 'checked');
@@ -45,7 +51,6 @@ $(function () {
             , $contextMenuChecked = $contextMenu.is(':checked')
             , downloadIcon = localStorage.delugeDownloadIcon
             , oneClickMagnets = localStorage.oneClickMagnets
-            , background = chrome.extension.getBackgroundPage()
             , contextMenu = localStorage.contextMenu
             , debugMode = localStorage.debugMode
             , messageText = ''
@@ -132,6 +137,7 @@ $(function () {
             return false;
         });
 
-        restoreOptions();
+        
+        background.Background.getVersion(restoreOptions);
     }());
 });
