@@ -213,12 +213,9 @@ jQuery(document).ready(function ($) {
                     }
                 });
         });
-
-        $('.state', $mainActions).live('click', function () {
-            var rowData = getRowData(this)
-                , method = rowData.torrent.state === 'Paused' ? 'core.resume_torrent' : 'core.pause_torrent';
-
-            Deluge.api(method, [[rowData.torrentId]])
+        
+        function setTorrentStates(method, torrentIds) {
+            Deluge.api(method, [torrentIds])
                 .success(function () {
                     if (Global.getDebugMode()) {
                         console.log('Deluge: Updated state');
@@ -230,6 +227,13 @@ jQuery(document).ready(function ($) {
                         console.log('Deluge: Failed to update state');
                     }
                 });
+        }
+
+        $('.state', $mainActions).live('click', function () {
+            var rowData = getRowData(this)
+                , method = rowData.torrent.state === 'Paused' ? 'core.resume_torrent' : 'core.pause_torrent';
+
+            setTorrentStates(method, [rowData.torrentId]);
         });
 
         $('.move_up', $mainActions).live('click', function () {
@@ -293,7 +297,7 @@ jQuery(document).ready(function ($) {
 
         });
 
-        $('.all_actions .delete').live('click', function () {
+        $('#delete-selected').live('click', function () {
             pauseTableRefresh();
             showDeleteOptions($(this).parents('td'), '.all_actions');
         });
@@ -344,6 +348,24 @@ jQuery(document).ready(function ($) {
                 });
             }
             return false;
+        });
+        
+        $('#pause-selected').live('click', function () {
+            var torrents = [];
+            $(':checked').each(function (i, sel) {
+                torrents.push($(sel).val());
+            })
+            
+            setTorrentStates('core.pause_torrent', torrents);
+        });
+        
+        $('#resume-selected').live('click', function () {
+            var torrents = [];
+            $(':checked').each(function (i, sel) {
+                torrents.push($(sel).val());
+            })
+            
+            setTorrentStates('core.resume_torrent', torrents);
         });
     }());
 
