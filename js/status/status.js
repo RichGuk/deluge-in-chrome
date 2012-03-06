@@ -367,6 +367,10 @@ jQuery(document).ready(function ($) {
             
             setTorrentStates('core.resume_torrent', torrents);
         });
+        
+        $('#select-all').live('click', function () {
+            $('.table_cell_checkbox').find(':checkbox').attr('checked', this.checked);
+        });
     }());
 
     (function () {
