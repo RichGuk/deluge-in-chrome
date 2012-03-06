@@ -360,10 +360,13 @@ jQuery(document).ready(function ($) {
                 e.stopPropagation();
             });
         });
+        // For some reason the link has focus when the status is shown, however
+        // we can't blur straight away, wait 10ms then do it.
+        setTimeout(function() { $('#add-torrent').blur(); }, '10');
 
         $('#add-torrent-dialog .close').click(function(e) {
             e.preventDefault();
-            $('#add-torrent-dialog').hide();
+            $('#add-torrent-dialog').hide()
         });
 
         var $inputBox = $('#manual_add_input')
