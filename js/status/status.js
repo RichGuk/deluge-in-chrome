@@ -18,7 +18,7 @@ jQuery(document).ready(function ($) {
     // Setup timer information.
     const REFRESH_INTERVAL = 2000;
     var refreshTimer = Timer(REFRESH_INTERVAL);
-    
+
 
 
     // I can't get the popup to play nicely when there is a scroll bar and then
@@ -75,7 +75,7 @@ jQuery(document).ready(function ($) {
         // Clear out any existing timers.
         refreshTimer.unsubscribe();
         $('[name]=selected_torrents[checked]').each(function () {
-            checked.push($(this).val());        
+            checked.push($(this).val());
         });
         Torrents.update()
             .success(function () {
@@ -131,7 +131,7 @@ jQuery(document).ready(function ($) {
         for (i = 0; i < torrents.length; i += 1) {
             torrent = torrents[i];
             isChecked = '';
-            
+
             if (checked.indexOf(torrent.id) !== -1) {
                 isChecked = 'checked=checked';
             }
@@ -142,37 +142,37 @@ jQuery(document).ready(function ($) {
                     $(document.createElement('td'))
                         .addClass('table_cell_checkbox')
                         .html($('<input type="checkbox" name="selected_torrents[]"' + isChecked + '>').val(torrent.id)),
-    
+
                     // Position cell.
                     $(document.createElement('td'))
                         .addClass('table_cell_position')
                         .html(torrent.getPosition()),
-    
+
                     // name.
                     $(document.createElement('td'))
                         .addClass('table_cell_name')
                         .html(torrent.name),
-    
+
                     // Size.
                     $(document.createElement('td'))
                         .addClass('table_cell_size')
                         .html(torrent.getHumanSize()),
-    
+
                     // Progress bar.
                     $(document.createElement('td'))
                         .addClass('table_cell_progress')
                         .html(progressBar(torrent)),
-    
+
                     // Speed.
                     $(document.createElement('td'))
                         .addClass('table_cell_speed')
                         .html(torrent.getSpeeds()),
-    
+
                     // Estimated time.
                     $(document.createElement('td'))
                         .addClass('table_cell_eta')
                         .html(torrent.getEta()),
-    
+
                     // Action menus.
                     $(document.createElement('td'))
                         .addClass('table_cell_actions')
@@ -193,8 +193,8 @@ jQuery(document).ready(function ($) {
                 , torrent = Torrents.getById(torrentId);
             return {'torrentId': torrentId, 'torrent': torrent};
         }
-        
-        var $mainActions = $('.main_actions'); 
+
+        var $mainActions = $('.main_actions');
 
         $('.toggle_managed', $mainActions).live('click', function () {
             var rowData = getRowData(this)
@@ -265,11 +265,11 @@ jQuery(document).ready(function ($) {
                     }
                 });
         });
-        
+
         function showDeleteOptions($parent, actionClass) {
-            var $parentTd = $parent           
+            var $parentTd = $parent
                 , newElm = $('<div>');
-            
+
             newElm.addClass('delete-options').hide();
             $(actionClass, $parentTd).hide();
             $parentTd.append(newElm);
@@ -290,12 +290,12 @@ jQuery(document).ready(function ($) {
         $('.delete', $mainActions).live('click', function () {
             pauseTableRefresh();
             showDeleteOptions($(this).parents('td'), '.main_actions');
-            
+
         });
-        
+
         $('.all_actions .delete').live('click', function () {
             pauseTableRefresh();
-            showDeleteOptions($(this).parents('td'), '.all_actions');   
+            showDeleteOptions($(this).parents('td'), '.all_actions');
         });
 
         $('.delete-options a').live('click', function () {
@@ -332,7 +332,7 @@ jQuery(document).ready(function ($) {
                         }
                         removeButtons();
                     });
-            }            
+            }
 
             if (parentClass === 'table_cell_actions') {
                 rowData = getRowData(this);
@@ -340,7 +340,7 @@ jQuery(document).ready(function ($) {
             } else {
                 $('[name]=selected_torrents[checked]').each(function () {
                     rowData = getRowData(this);
-                    removeTorrent(rowData.torrentId);        
+                    removeTorrent(rowData.torrentId);
                 });
             }
             return false;
@@ -348,6 +348,24 @@ jQuery(document).ready(function ($) {
     }());
 
     (function () {
+        $('#add-torrent').click(function(e) {
+            e.preventDefault();
+            $('#add-torrent-dialog').show();
+            $('#add-torrent-dialog').click(function(e) {
+                $(this).hide();
+            });
+
+            /* Don't closed if clicked within .inner */
+            $('#add-torrent-dialog .inner').click(function(e) {
+                e.stopPropagation();
+            });
+        });
+
+        $('#add-torrent-dialog .close').click(function(e) {
+            e.preventDefault();
+            $('#add-torrent-dialog').hide();
+        });
+
         var $inputBox = $('#manual_add_input')
             , $addButton = $('#manual_add_button');
 
@@ -358,7 +376,8 @@ jQuery(document).ready(function ($) {
             }
         });
 
-        $addButton.live('click', function () {
+        $addButton.live('click', function (e) {
+            e.preventDefault();
             var url = $inputBox.val();
 
             // Now check that the link contains either .torrent or download, get, etc...
@@ -369,7 +388,6 @@ jQuery(document).ready(function ($) {
                             $inputBox.val('');
                         }
                     });
-                return false;
             } else if (url.search(/magnet:/) != -1) {
                 chrome.extension.sendRequest({ msg: 'add_torrent_from_magnet', url: url},
                     function (response) {
@@ -378,9 +396,9 @@ jQuery(document).ready(function ($) {
                             $inputBox.val('');
                         }
                     });
-                return false;
             }
-            return false;
+
+            $('#add-torrent-dialog').hide();
         });
     }());
 

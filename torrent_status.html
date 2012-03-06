@@ -3,6 +3,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title></title>
+    <link rel="stylesheet" href="css/buttons.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="css/master.css" type="text/css" media="screen" />
     <script src="js/libs/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/global.js" type="text/javascript" charset="utf-8"></script>
@@ -20,6 +21,19 @@
         <span class="error">&nbsp;</span>
       </div>
     </div>
+
+    <div id="add-torrent-dialog" class="dialog">
+      <div class="inner">
+        <div class="header"><span>Add Torrent</span> <a href="#close" class="close"><span>Close</span></a></div>
+        <div class="body">
+          <p>Please enter URL or Magnet link and click add.</p>
+          <input type="text" id="manual_add_input" placeholder="http://"  />
+          <p><button class="clean-gray" id="manual_add_button">Add</button></p>
+        </div>
+      </div>
+    </div>
+
+    <a href="#add-torrent" id="add-torrent" title="Add Torrent"><span>Add Torrent</span></a>
 
     <div id="global-information">
       <span class="all-label">Total torrents</span>: <span class="data all">0</span>
@@ -42,9 +56,7 @@
           <th id="table_header_actions">&nbsp;</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody><tr><td>&nbsp;</td></tr></tbody>
     </table>
-    <input type="text" id="manual_add_input" />
-    <button id="manual_add_button">Add</button>
   </body>
 </html>

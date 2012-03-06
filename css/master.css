@@ -40,7 +40,7 @@ a {
   top: 0;
 }
 
-#overlay {
+#overlay, .dialog {
   background: rgba(0, 0, 0, 0.9);
   display: none;
   font-size: 1.2em;
@@ -69,6 +69,66 @@ a {
     line-height: 24px;
     padding-left: 35px;
     vertical-align: middle;
+  }
+
+  .dialog .inner {
+    margin: 20px auto 0 auto;
+    width: 500px;
+  }
+  .dialog .header {
+    background-image: -webkit-gradient(linear, 0% 18%, 0% 52%, from(#FDFDFD), to(#E9E9E9));
+    background-repeat: no-repeat;
+    background-position: left 2px;
+    border: 0;
+    border-bottom: 1px solid #CCC;
+    padding: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+
+    font-weight: bold;
+    font-size: 1.2em;
+    text-shadow: 0 1px 0 white;
+
+    position: relative;
+  }
+    .dialog .header .close {
+      position: absolute;
+      right: 5px;
+      background: url(/themes/standard/images/close.png?1) no-repeat left top;
+      border: 0;
+      width: 16px;
+      height: 16px;
+    }
+    .dialog .header .close > span { display: none; }
+  .dialog .body {
+    background: white;
+    padding: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    overflow: hidden;
+  }
+
+#add-torrent-dialog #manual_add_input {
+  width: 99%;
+}
+#add-torrent-dialog #manual_add_button {
+  float: right;
+  border: 1px solid #AAA;
+}
+
+
+#add-torrent {
+  border: 0;
+  background: url(/themes/standard/images/add_torrent.png) no-repeat left top;
+  display: block;
+  float: right;
+  height: 22px;
+  width: 22px;
+  margin: 5px;
+  text-decoration: none;
+}
+  #add-torrent span {
+    display: none;
   }
 
 #global-information {
