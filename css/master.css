@@ -131,6 +131,15 @@ a {
     display: none;
   }
 
+#logo {
+  float: left;
+  margin: 3px;
+}
+  #logo span {
+    font-weight: bold;
+    font-size: 2em;
+  }
+
 #global-information {
   display: block;
   float: right;
