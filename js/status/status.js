@@ -60,14 +60,14 @@ jQuery(document).ready(function ($) {
             .addClass('main_actions')
             .append(
                 // Delete.
-                $(document.createElement('a')).addClass('delete'),
+                $(document.createElement('a')).addClass('delete').prop('title', 'Delete Options'),
                 // Pause/Resume buttons.
-                $(document.createElement('a')).addClass('state').addClass(state),
+                $(document.createElement('a')).addClass('state').addClass(state).prop('title', 'Pause/Resume Torrent'),
                 // Move up button.
-                $(document.createElement('a')).addClass('move_up'),
-                $(document.createElement('a')).addClass('move_down'),
+                $(document.createElement('a')).addClass('move_up').prop('title', 'Move Torrent Up'),
+                $(document.createElement('a')).addClass('move_down').prop('title', 'Move Torrent Down'),
                 // Auto managed options.
-                $(document.createElement('a')).addClass('toggle_managed').addClass(managed)
+                $(document.createElement('a')).addClass('toggle_managed').addClass(managed).prop('title', 'Toggle Auto-managed State')
             );
     }
 
@@ -278,11 +278,11 @@ jQuery(document).ready(function ($) {
 
                 $tmp.append(
                     // Cancel.
-                    $(document.createElement('a')).addClass('cancel').prop('rel', 'cancel'),
+                    $(document.createElement('a')).addClass('cancel').prop('rel', 'cancel').prop('title', 'Cancel'),
                     // Delete torrent and data.
-                    $(document.createElement('a')).addClass('data').prop('rel', 'data'),
+                    $(document.createElement('a')).addClass('data').prop('rel', 'data').prop('title', 'Delete with Data'),
                     // Delete just torrent.
-                    $(document.createElement('a')).addClass('torrent').prop('rel', 'torrent')
+                    $(document.createElement('a')).addClass('torrent').prop('rel', 'torrent').prop('title', 'Delete just Torrent File')
                 );
             });
         }

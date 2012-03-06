@@ -152,6 +152,13 @@ a {
     margin-right: 10px;
   }
 
+#mass-buttons {
+  margin: 15px 0 0 0;
+}
+#mass-buttons button {
+  padding: 5px;
+}
+
 table#torrent_table {
   border-spacing: 0;
   width: 790px;
