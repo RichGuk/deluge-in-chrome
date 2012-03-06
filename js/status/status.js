@@ -361,8 +361,8 @@ jQuery(document).ready(function ($) {
             });
         });
         // For some reason the link has focus when the status is shown, however
-        // we can't blur straight away, wait 10ms then do it.
-        setTimeout(function() { $('#add-torrent').blur(); }, '10');
+        // we can't blur straight away, wait 50ms then do it.
+        setTimeout(function() { $('#add-torrent').blur(); }, '50');
 
         $('#add-torrent-dialog .close').click(function(e) {
             e.preventDefault();
