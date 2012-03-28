@@ -8,8 +8,46 @@ var Torrents = (function ($) {
         , globalInformation = {};
 
     function sortCallback(a, b) {
-        a = a.name;
-        b = b.name;
+        switch (localStorage.sortColumn) {
+        case 'name':
+            a = a.name;
+            b = b.name;
+            break;
+  
+        case 'size':
+            a = a.size;
+            b = b.size;
+            break;
+  
+        case 'progress':
+            a = a.progress;
+            b = b.progress;
+            break;
+  
+        case 'speed':
+            a = a.speed;
+            b = b.speed;
+            break;
+  
+        case 'eta':
+            a = a.eta;
+            b = b.eta;
+            break;
+  
+        case 'position':
+            a = a.position;
+            b = b.position;
+            break;
+      
+        // Sort by queue asc if nothing is already set.
+        default:
+            a = a.position;
+            b = b.position;
+            // Set them for future use.
+            localStorage.sortColumn = 'position';
+            localStorage.sortMethod = 'asc';
+            break;
+        }
 
         if (a < b) {
             return -1;
@@ -17,6 +55,7 @@ var Torrents = (function ($) {
         if (a > b) {
             return 1;
         }
+        
         return 0;
     }
 

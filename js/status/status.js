@@ -19,8 +19,6 @@ jQuery(document).ready(function ($) {
     const REFRESH_INTERVAL = 2000;
     var refreshTimer = Timer(REFRESH_INTERVAL);
 
-
-
     // I can't get the popup to play nicely when there is a scroll bar and then
     // when there isn't - so going to adjust the width if a scroll bar is
     // visible (this needs to be done on timeout to give popup time to show).
@@ -434,6 +432,30 @@ jQuery(document).ready(function ($) {
         });
     }());
 
+    $(function() {
+        $('#table_header_' + localStorage.sortColumn).addClass('sorted ' + localStorage.sortMethod);
+      
+        $('.sortable').click(function () {
+            var $link = $(this)
+                , column = $link.attr('rel'); 
+            // If the link clicked is different to the active one
+            // then reset the assending order and add the active class.
+            if (column === localStorage.sortColumn) {
+                // If it's the same just change the sorting order.
+                localStorage.sortMethod = localStorage.sortMethod === 'asc' ? 'desc' : 'asc';
+                $link.removeClass('asc desc').addClass(localStorage.sortMethod);
+            } else {
+                // Make sure none of the links are the active one.
+                $('.sortable').removeClass('sorted asc desc');
+                $link.addClass('sorted asc');
+            
+                localStorage.sortMethod = 'asc';
+                localStorage.sortColumn = column;
+            }
+            updateTable();
+        });
+    }());
+    
     /*
      * Check the status of the extension and do the handling for the popup.
      *

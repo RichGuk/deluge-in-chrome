@@ -225,6 +225,13 @@ table#torrent_table {
 a:hover {color: #000000;}
 .clr { clear: both; }
 
+#mass-buttons {
+  padding: 10px;
+  font-size: 1.1em;
+  color: darkRed;
+  font-weight: bold;
+}
+
 #mass-buttons a {
   border: 0;
   cursor: pointer;
@@ -241,3 +248,11 @@ a:hover {color: #000000;}
     #mass-buttons a.delete { background: url(/themes/standard/images/remove.png) no-repeat left top; }
     #mass-buttons a.data { background: url(/themes/standard/images/trash.png) no-repeat left top; }
     #mass-buttons a.torrent { background: url(/themes/standard/images/database.png) no-repeat left top; }
+    
+.sortable:hover {
+  cursor: pointer;
+}
+
+.sorted {
+    color: darkRed;
+}
