@@ -137,6 +137,7 @@ jQuery(document).ready(function ($) {
             }
             $tr = $(document.createElement('tr'))
                 .data({ id: torrent.id }) /* Store torrent id on the tr */
+                .addClass('torrent_row')
                 .append(
                     // Checkbox.
                     $(document.createElement('td'))
@@ -270,13 +271,14 @@ jQuery(document).ready(function ($) {
                 });
         });
 
-        function showDeleteOptions($parent, actionClass) {
-            var $parentTd = $parent
-                , newElm = $('<div>');
+        $('.delete', $mainActions).live('click', function () {
+            pauseTableRefresh();
+            
+            var newElm = $('<div>');
 
             newElm.addClass('delete-options').hide();
-            $(actionClass, $parentTd).hide();
-            $parentTd.append(newElm);
+            $('.main_actions', $(this).parents('td')).hide();
+            $(this).parents('td').append(newElm);
             newElm.fadeIn('fast', function () {
                 var $tmp = $(this);
 
@@ -289,19 +291,22 @@ jQuery(document).ready(function ($) {
                     $(document.createElement('a')).addClass('torrent').prop('rel', 'torrent').prop('title', 'Delete just Torrent File')
                 );
             });
+        });
+
+        function removeTorrent(id, delData) {
+            Deluge.api('core.remove_torrent', [id, delData])
+                .success(function () {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Removed torrent');
+                    }
+                })
+                .error(function () {
+                    if (Global.getDebugMode()) {
+                        console.log('Deluge: Failed to remove torrent');
+                    }
+                });
         }
-
-        $('.delete', $mainActions).live('click', function () {
-            pauseTableRefresh();
-            showDeleteOptions($(this).parents('td'), '.main_actions');
-
-        });
-
-        $('#delete-selected').live('click', function () {
-            pauseTableRefresh();
-            showDeleteOptions($(this).parents('td'), '.all_actions');
-        });
-
+        
         $('.delete-options a').live('click', function () {
             var action = $(this).attr('rel') || 'cancel'
                 , parentClass = $(this).parents('td').attr('class')
@@ -322,50 +327,48 @@ jQuery(document).ready(function ($) {
                 return false;
             }
 
-            function removeTorrent(id) {
-                Deluge.api('core.remove_torrent', [id, delData])
-                    .success(function () {
-                        if (Global.getDebugMode()) {
-                            console.log('Deluge: Removed torrent');
-                        }
-                        removeButtons();
-                    })
-                    .error(function () {
-                        if (Global.getDebugMode()) {
-                            console.log('Deluge: Failed to remove torrent');
-                        }
-                        removeButtons();
-                    });
-            }
-
             if (parentClass === 'table_cell_actions') {
                 rowData = getRowData(this);
-                removeTorrent(rowData.torrentId);
+                removeTorrent(rowData.torrentId, delData);
             } else {
                 $('[name]=selected_torrents[checked]').each(function () {
                     rowData = getRowData(this);
-                    removeTorrent(rowData.torrentId);
+                    removeTorrent(rowData.torrentId, delData);
                 });
             }
+            removeButtons();
             return false;
         });
         
-        $('#pause-selected').live('click', function () {
+        function performMassRemove(delData) {
+            $(':checked', '.torrent_row').each(function (i, sel) {
+                removeTorrent($(sel).val(), delData);
+            });
+        }
+        
+        $('#delete-selected-torrent').live('click', function () {
+            performMassRemove(false);
+        });
+        
+        $('#delete-selected-data').live('click', function () {
+            performMassRemove(true);
+        });
+        
+        function getSelTorrents() {
             var torrents = [];
-            $(':checked').each(function (i, sel) {
+            $(':checked', '.torrent_row').each(function (i, sel) {
                 torrents.push($(sel).val());
-            })
+            });
             
-            setTorrentStates('core.pause_torrent', torrents);
+            return torrents
+        }
+        
+        $('#pause-selected').live('click', function () {
+            setTorrentStates('core.pause_torrent', getSelTorrents());
         });
         
         $('#resume-selected').live('click', function () {
-            var torrents = [];
-            $(':checked').each(function (i, sel) {
-                torrents.push($(sel).val());
-            })
-            
-            setTorrentStates('core.resume_torrent', torrents);
+            setTorrentStates('core.resume_torrent', getSelTorrents());
         });
         
         $('#select-all').live('click', function () {
