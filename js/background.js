@@ -403,6 +403,15 @@ var Background = (function($) {
 // Run init stuff for the plugin.
 jQuery(document).ready(function ($) {
     Background.checkStatus();
+    if (localStorage.deluge_address && !(localStorage.delugeAddress)) {
+        localStorage.delugeAddress = localStorage.deluge_address;
+    }
+    if (localStorage.deluge_password && !(localStorage.delugePassword)) {
+        localStorage.delugePassword = localStorage.deluge_password;
+    }
+    if (localStorage.deluge_download_icon && !(localStorage.delugeDownloadIcon)) {
+        localStorage.delugeDownloadIcon = localStorage.deluge_download_icon;
+    }
 });
 
 /*
