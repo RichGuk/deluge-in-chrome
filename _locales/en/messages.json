@@ -1,0 +1,28 @@
+{
+    "browser_title": {
+        "message": "Deluge - Torrent information in Chrome!",
+        "description": "Title shown for browser icon when enabled."
+    },
+    "browser_title_disabled": {
+        "message": "Could not connect to Deluge!",
+        "description": "Title shown for icon when extension disabled (i.e. can't connect to deluge)."
+    },
+
+    /* Error Messages */
+    "error_generic": {
+        "message": "Connection Problem - Unable to connect to Deluge Web UI.",
+        "description": "Generic error message shown when connection problems occur."
+    },
+    "error_unauthenticated": {
+        "message": "Unable to connect to Deluge Web UI. Please login manually or check your password in the options.",
+        "description": "Shown when auto login has failed to connect to Deluge."
+    },
+
+    /*
+     * Status Page.
+     */
+     "loading_data": {
+        "message": "Loading data...",
+        "description": "Shown anywhere that has content being loaded."
+    }
+}

@@ -1,64 +1,74 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
   <head>
-    <meta charset="utf-8" />
-    <title>Deluge - torrent information in Chrome</title>
-    <link rel="stylesheet" href="css/master.css?1276345042" type="text/css" media="screen" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title></title>
+    <link rel="stylesheet" href="css/buttons.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="css/master.css" type="text/css" media="screen" />
+    <script src="js/libs/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/global.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/deluge.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/torrent.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/timer.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/status/torrents.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/status/status.js" type="text/javascript" charset="utf-8"></script>
   </head>
+
   <body>
-    <div id="disconnected">
-      <p>Currently unable to connect to the Deluge web interface. Please make sure that the extension is configured with the correct address, port and password.</p>
+
+    <div id="overlay">
+      <div class="overlay_inner">
+        <span class="error">&nbsp;</span>
+      </div>
     </div>
-    <div id="torrent-status" style="display: none">
-      <div id="header">
-        <div id="logo"><a href=""><span class="title">Deluge</span></a></div>
-        <div id="table-refresh-status" style="">Table Refresh: <span class="active">Loading...</span></div>
-        <div id="global-information">
-          Total torrents: <span class="all">0</span>
-          Downloading: <span class="downloading">0</span>
-          Seeding: <span class="seeding">0</span>
-          Paused: <span class="paused">0</span>
-          Queued: <span class="queued">0</span>
+
+    <div id="add-torrent-dialog" class="dialog">
+      <div class="inner">
+        <div class="header"><span>Add Torrent</span> <a href="#close" class="close"><span>Close</span></a></div>
+        <div class="body">
+          <p>Please enter URL or Magnet link and click add.</p>
+          <input type="text" id="manual_add_input" placeholder="http://"  />
+          <p><button class="clean-gray" id="manual_add_button">Add</button></p>
         </div>
-        <div class="clr"></div>
       </div>
+    </div>
 
-      <div id="torrents">
-        <table class="nice-table">
-          <thead>
-            <tr>
-              <th class="left"><input type="checkbox" class="global_checkbox"></th>
-              <th><a href="#sort" class="sort_torrents" rel="queue">#</a></th>
-              <th><a href="#sort" class="sort_torrents" rel="name">Name</a></th>
-              <th><a href="#sort" class="sort_torrents" rel="size">Size</a></th>
-              <th><a href="#sort" class="sort_torrents" rel="progress">Progress</a></th>
-              <th><a href="#sort" class="sort_torrents" rel="speed">Speed <span class="small">(D) - (U)</span></a></th>
-              <th><a href="#sort" class="sort_torrents" rel="eta">ETA</a></th>
-              <th class="right">&nbsp;</th>
-            </tr>
+    <div id="logo"><img src="/images/icons/16.png" /> <span>Deluge in Chrome</span></div>
 
-            <tbody>
-            </tbody>
-        </table>
-      </div>
+    <a href="#add-torrent" id="add-torrent" title="Add Torrent"><span>Add Torrent</span></a>
 
-      <div id="key" class="global_actions">
-        <span class="legend">Key:</span>
-        <a class="start" href="#start"><img src="images/start.png" alt="S" /> Start</a>&nbsp;
-        <a class="pause" href="#pause"><img src="images/pause.png" alt="P" class="pause" /> Pause</a>&nbsp;
-        <a class="queue-up" href="#up"><img src="images/up.png" alt="U" /> Move up</a>&nbsp;
-        <a class="queue-down" href="#down"><img src="images/down.png" alt="D" /> Move down</a>&nbsp;
-        <a class="auto-managed" href="#auto-managed" title="Disable auto-managed state"><img src="images/manage_active.png" alt="M" /> <span>Disable auto-managed state</span></a>
-        <div class="divider"></div>
-        <span class="legend">Delete Key:</span>
-        <img src="images/remove.png" alt="X" /> Show delete options:&nbsp;
-        <img src="images/cancel.png" alt="C" /> Cancel&nbsp;
-        <a class="delete" href="#delete-data" rel="data"><img src="images/trash.png" alt="DT" /> Delete torrent &amp; data</a>
-        <a class="delete" href="#delete-file" rel="file"><img src="images/file.png" alt="T" /> Delete torrent</a>
-      </div>
-    </div> <!-- torrent-status -->
-    <script src="js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/Deluge.Formatters.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/status.js" type="text/javascript" charset="utf-8"></script>
+    <div id="global-information">
+      <span class="all-label">Total torrents</span>: <span class="data all">0</span>
+      <span class="downloading-label">Downloading</span>: <span class="data downloading">0</span>
+      <span class="seeding-label">Seeding</span>: <span class="data seeding">0</span>
+      <span class="paused-label">Paused</span>: <span class="data paused">0</span>
+      <span class="queued-label">Queued</span>: <span class="data queued">0</span>
+    </div>
+
+    <div style="clear: both;"></div>
+
+    <table id="torrent_table">
+      <thead>
+        <tr>
+          <th id="table_header_checkbox"><input type="checkbox" id="select-all"></th>
+          <th id="table_header_position" rel="position" class="sortable">#</th>
+          <th id="table_header_name" rel="name" class="sortable">Name</th>
+          <th id="table_header_size" rel="size" class="sortable">Size</th>
+          <th id="table_header_progress" rel="progress" class="sortable">Progress</th>
+          <th id="table_header_speed" rel="speed" class="sortable">Speed <span class="small">(D) - (U)</span></th>
+          <th id="table_header_eta" rel="eta" class="sortable">ETA</th>
+          <th id="table_header_actions">&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody><tr><td>&nbsp;</td></tr></tbody>
+    </table>
+
+
+    <div id="mass-buttons">
+      <a id="pause-selected" class="state pause" title="Pause selected torrents"></a>
+      <a id="resume-selected" class="state resume" title="Resume selected torrents"></a>
+      <a id="delete-selected-torrent" class="torrent" rel="torrent" title="Delete selected torrent files"></a>
+      <a id="delete-selected-data" class="data" rel="data" title="Delete select torrents with Data"></a>
+    </div>
   </body>
 </html>

@@ -3,147 +3,92 @@
   <head>
     <meta charset="utf-8" />
     <title>Deluge in Chrome : Configuration</title>
+    
+    <script src="js/libs/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/options.js" type="text/javascript" charset="utf-8"></script>
+    
     <link rel="stylesheet" href="css/master.css" type="text/css" />
     <link rel="stylesheet" href="css/chrome.css" type="text/css" />
     <style type="text/css" media="screen">
+      body { width: 100%; }
       .buttons { margin: 10px 0 0 0; }
       .buttons .left { float: left; }
       .buttons .right { float: right; }
+      #content { width: 790px; margin-left: auto; margin-right: auto;
+                border: 1px solid #CCC; padding: 5px; }
+      #options form { width: 500px; margin-left: auto; margin-right: auto;}
     </style>
   </head>
 
   <body>
-    <div id="header">
-      <div id="logo">
-        <a href="#" title="Go to Deluge WebUI!">
-          <span class="title">Deluge</span>
-          <span class="subtitle">Deluge torrent information in Chrome</span>
-        </a>
-      </div>
-      <div class="clr"></div>
-    </div>
-
-    <div id="options">
-      <div class="chrome-header">
-        <h2>Configuration</h2>
-      </div>
-      <div class="chrome-sub-header">
-        <p>This extension requires an accessible version of Deluge web interface to be running. Please refer to the <a href="http://deluge-torrent.org/" target="_blank">Deluge documentation</a> on how to get this working.</p>
-        <p>In order to connect to the web interface with need to know some details about the web interface. The address used to access the interface (http://address:port) and finally the password used to login.</p>
-      </div>
-
-      <div id="status-message"></div>
-
-      <form class="nice-form" style="width: 500px">
-        <fieldset>
-          <legend>Options</legend>
-          <p>
-            <label>Address:</label>
-            <input type="text" name="address" id="address" style="width: 300px" placeholder="http://" />
-          </p>
-
-          <p>
-            <label>Password:</label>
-            <input type="password" name="password" id="password" />
-          </p>
-
-          <p>
-            <input type="checkbox" name="enable_download_torrent" id="enable_download_torrent" value="1" />
-            <label class="normal" for="enable_download_torrent"> Enable download torrent icon? <span>(experimental)</span></label>
-          </p>
-        </fieldset>
-
-        <div class="buttons">
-          <div class="left">
-            <button type="submit" class="cancel">Cancel</button>
-          </div>
-          <div class="right">
-            <button type="submit" class="save">Save</button>
-            <button type="submit" class="apply">Apply</button>
-          </div>
-          <div class="clr"></div>
+    <div id="content">
+      <div id="header">
+        <div id="logo">
+          <a href="#" title="Go to Deluge WebUI!">
+            <span class="title">Deluge</span>
+            <span class="subtitle">Deluge torrent information in Chrome</span>
+          </a>
         </div>
-      </form>
+        <div class="clr"></div>
+      </div>
+  
+      <div id="options">
+        <div class="chrome-header">
+          <h2>Configuration</h2>
+        </div>
+        <div class="chrome-sub-header">
+          <p>This extension requires an accessible version of Deluge web interface to be running. Please refer to the <a href="http://deluge-torrent.org/" target="_blank">Deluge documentation</a> on how to get this working.</p>
+          <p>In order to connect to the web interface with need to know some details about the web interface. The address used to access the interface (http://address:port) and finally the password used to login.</p>
+        </div>
+  
+        <div id="status-message"></div>
+  
+        <form class="nice-form" style="width: 500px">
+          <fieldset>
+            <legend>Options</legend>
+            <p>
+              <label>Address:</label>
+              <input type="text" name="address" id="address" style="width: 300px" placeholder="http://" />
+            </p>
+  
+            <p>
+              <label>Password:</label>
+              <input type="password" name="password" id="password" />
+            </p>
+  
+            <p>
+              <input type="checkbox" name="enable_download_torrent" id="enable_download_torrent" value="1" />
+              <label class="normal" for="enable_download_torrent"> Enable download torrent icon? <span>(experimental)</span></label>
+            </p>
+            
+            <p id="magnet" style="display: none">
+              <input type="checkbox" name="enable_one_click_magnet" id="enable_one_click_magnet" value="0" />
+              <label class="normal" for="enable_one_click_magnet"> Enable one click magnet link downloads? <span>(versions 1.3.4 and up only)</span></label>
+            </p> 
+             
+            <p>
+              <input type="checkbox" name="enable_context_menu" id="enable_context_menu" value="0" />
+              <label class="normal" for="enable_context_menu"> Enable context menu? </label>
+            </p>
+            
+            <p>
+              <input type="checkbox" name="enable_debug_mode" id="enable_debug_mode" value="0" />
+              <label class="normal" for="enable_debug_mode"> Enable debug mode? </label>
+            </p>
+          </fieldset>
+  
+          <div class="buttons">
+            <div class="left">
+              <button type="submit" class="cancel">Cancel</button>
+            </div>
+            <div class="right">
+              <button type="submit" class="save">Save</button>
+              <button type="submit" class="apply">Apply</button>
+            </div>
+            <div class="clr"></div>
+          </div>
+        </form>
+      </div>
     </div>
-
-    <script src="js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
-    <script type="text/javascript" charset="utf-8">
-      function restore_options() {
-        var address = '';
-
-        address = localStorage.deluge_address;
-        $('#address').val(address);
-        $('#password').val(localStorage.deluge_password);
-        if(localStorage.deluge_download_icon == 'true') {
-          $('#enable_download_torrent').attr('checked', 'checked');
-        } else {
-          $('#enable_download_torrent').removeAttr('checked');
-        }
-      }
-
-      function save_options() {
-        var message = new Array();
-        var address = $('#address').val();
-        var password = $('#password').val();
-        var download_link = $('#enable_download_torrent').is(':checked');
-
-        if(address) {
-          if(localStorage.deluge_address != address) {
-            message.push('Address updated.');
-          }
-          localStorage.deluge_address = address.replace(/\/$/, '');
-        }
-        if(password) {
-          if(localStorage.deluge_password != password) {
-            message.push('Password updated.');
-          }
-          localStorage.deluge_password = password;
-        }
-        if(download_link
-            && String(download_link) != localStorage.deluge_download_icon) {
-          message.push('Download torrent icon enabled!');
-        } else if(String(download_link) != localStorage.deluge_download_icon) {
-          message.push('Download torrent icon disabled!');
-        }
-        localStorage.deluge_download_icon = download_link;
-
-        var background = chrome.extension.getBackgroundPage();
-        background.deluge_status_check({
-          success: background.enable_icon,
-          error: background.disable_icon
-        });
-
-        console.log('deluge: options saved!');
-        if(message.length > 0) {
-          var message_text = '';
-          $.each(message, function(index, obj) {
-            message_text += obj + '<br>';
-          });
-          $('#status-message').html(message_text).fadeIn();
-          setTimeout('$("#status-message").fadeOut();', 5000);
-        }
-      }
-
-
-      $(document).ready(function() {
-        $('.buttons .save').live('click', function() {
-          save_options();
-          window.close();
-          return false;
-        });
-
-        $('.buttons .apply').live('click', function() {
-          save_options();
-          return false;
-        });
-
-        $('.buttons .cancel').live('click', function() {
-          window.close();
-          return false;
-        });
-
-        restore_options();
-      });
-    </script>
   </body>
 </html>
