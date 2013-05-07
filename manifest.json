@@ -7,13 +7,25 @@
     "32": "images/icons/32.png",
     "16": "images/icons/16.png"
   },
+  "web_accessible_resources": [
+    "images/icons/16.png",
+    "images/icons/16_green.png"
+  ],
   "default_locale": "en",
-  "background_page": "background.html",
+  "background": {
+    "scripts": [
+      "js/libs/jquery-1.7.1.min.js",
+      "js/global.js",
+      "js/deluge.js",
+      "js/background.js"
+    ],
+    "persistent": true
+  },
   "options_page": "options.html",
   "browser_action": {
     "default_icon": "images/icons/deluge.png",
     "default_title": "__MSG_browser_title_disabled__",
-    "popup": "torrent_status.html"
+    "default_popup": "torrent_status.html"
   },
   "content_scripts": [
     {
@@ -25,5 +37,6 @@
      "tabs", "http://*/*", "https://*/*", "contextMenus"
   ],
 
-  "version": "1.0"
+  "version": "1.1",
+  "manifest_version": 2
 }
