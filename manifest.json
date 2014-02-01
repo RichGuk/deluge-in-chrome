@@ -3,7 +3,7 @@
   "description": "Provides a quick overview of torrent status for Deluge.",
   "icons": {
     "48": "images/icons/128.png",
-    "64": "images/icons/164.png",
+    "64": "images/icons/64.png",
     "32": "images/icons/32.png",
     "16": "images/icons/16.png"
   },
